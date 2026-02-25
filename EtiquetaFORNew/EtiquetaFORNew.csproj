@@ -250,6 +250,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CalibracaoManager.cs" />
     <Compile Include="CarregadorDados.cs" />
     <Compile Include="Classes.cs" />
     <Compile Include="ConfiguracaoManager.cs" />
@@ -259,6 +260,12 @@
     <Compile Include="Data\SoftcomShopDataManager.cs" />
     <Compile Include="FormNomeTemplate.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\calibracao.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\calibracao.Designer.cs">
+      <DependentUpon>calibracao.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\FormFiltrosCarregamento.cs">
       <SubType>Form</SubType>
@@ -363,6 +370,9 @@
     <Compile Include="TemplatePadraoManager.cs" />
     <Compile Include="TemplatesPreDefinidos.cs" />
     <Compile Include="Properties\VersaoHelper.cs" />
+    <EmbeddedResource Include="Forms\calibracao.resx">
+      <DependentUpon>calibracao.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ConfigForm.resx">
       <DependentUpon>ConfigForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -418,6 +428,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\calibracao.json" />
     <None Include="Resources\icone-novo-2025_PNG.png" />
   </ItemGroup>
   <ItemGroup>
@@ -498,6 +509,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="etiqueta-icone-softcom.ico" />
+    <None Include="Resources\calibracao3.png" />
+    <None Include="Resources\calibracao21.png" />
+    <None Include="Resources\calibracao2.png" />
+    <None Include="Resources\Calibracao.png" />
     <None Include="Resources\Sincronizando3.jpg" />
     <None Include="Resources\pngegg30x30.png" />
     <None Include="Resources\pngegg2.png" />

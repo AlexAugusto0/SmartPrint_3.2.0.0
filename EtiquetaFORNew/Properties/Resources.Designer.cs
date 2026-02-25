@@ -73,6 +73,46 @@ namespace EtiquetaFORNew.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Calibracao {
+            get {
+                object obj = ResourceManager.GetObject("Calibracao", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap calibracao2 {
+            get {
+                object obj = ResourceManager.GetObject("calibracao2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap calibracao21 {
+            get {
+                object obj = ResourceManager.GetObject("calibracao21", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap calibracao3 {
+            get {
+                object obj = ResourceManager.GetObject("calibracao3", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap ChatGPT_Image_24_de_out__de_2025__09_11_06 {
             get {
                 object obj = ResourceManager.GetObject("ChatGPT Image 24 de out. de 2025, 09_11_06", resourceCulture);

@@ -1,0 +1,94 @@
+{
+  "calibracoes": [
+    {
+      "nome": "Elgin L42",
+      "imagemRecurso": "Elgin L42.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=XnYBmVTI5Fo"
+    },
+    {
+      "nome": "Elgin L42 Pro",
+      "imagemRecurso": "Elgin L42 Pro.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=S_IId8trqGM"
+    },
+    {
+      "nome": "Elgin L42 Pro Full",
+      "imagemRecurso": "Elgin L42 Pro Full.jpg",
+      "driverUrl": "https://d2u2qhufg0q9tn.cloudfront.net/assets/arquivos/manual_32c69365-1128-4451-b2d7-dd16d4a5282b_L42PROFULL_Windows_driver.zip"
+    },
+    {
+      "nome": "Elgin L42 DT",
+      "imagemRecurso": "Elgin L42 DT.jpg",
+      "driverUrl": "https://d2u2qhufg0q9tn.cloudfront.net/assets/arquivos/imgCard_74bc386e-2aa0-41da-bbeb-03e9183afa4c_Driver%20Windows%20L42DT_7.4.3_M-5.exe"
+    },
+    {
+      "nome": "Argox OS-214 PLUS",
+      "imagemRecurso": "Argox OS 214 PLUS.jpg",
+      "driverUrl": "https://www.argox.com/docfile/drivers/Argox_11.5.0.exe"
+    },
+    {
+      "nome": "Argox OS-2140",
+      "imagemRecurso": "Argox OS 2140.jpg",
+      "driverUrl": "https://www.argox.com/docfile/drivers/Argox_11.5.0.exe"
+    },
+    {
+      "nome": "C3Tech IT200",
+      "imagemRecurso": "C3Tech IT200.jpg",
+      "driverUrl": "https://c3technology.com.br/download/DRIVES%20IT-200.rar"
+    },
+    {
+      "nome": "Tanca TLP 300",
+      "imagemRecurso": "Tanca TLP 300.jpg",
+      "driverUrl": "https://www.tanca.com.br/assets/conteudo/drivers/TLP-300/Driver_Windows_TLP300.zip"
+    },
+    {
+      "nome": "Zebra GC420t",
+      "imagemRecurso": "Zebra GC420t.jpg",
+      "driverUrl": "https://drive.google.com/file/d/1gBrLn5GGH0N6EwRVNUeqhE5Y03okiobA/view?usp=sharing"
+    },
+    {
+      "nome": "Zebra TLP 2844",
+      "imagemRecurso": "Zebra TLP 2844.jpg",
+      "driverUrl": "https://drive.google.com/file/d/1gBrLn5GGH0N6EwRVNUeqhE5Y03okiobA/view?usp=sharing"
+    },
+    {
+      "nome": "Zebra ZD220 / ZD230",
+      "imagemRecurso": "Zebra ZD220 ZD230.jpg",
+      "driverUrl": "https://drive.google.com/file/d/1325ZphEiD3ZHXuONL6grqXsZbMxlXqPL/view?usp=sharing"
+    },
+    {
+      "nome": "Coibel WKDY-80D",
+      "imagemRecurso": "Coibel WKDY 80D KNUP IM 604.jpg",
+      "driverUrl": "https://drive.google.com/file/d/1FMDWZRKpAG8EMR70Wm33Brz9vMExeFY9/view?usp=sharing"
+    },
+    {
+      "nome": "Knup IM-604",
+      "imagemRecurso": "Knup IM 604.jpg",
+      "driverUrl": "https://drive.google.com/file/d/1FMDWZRKpAG8EMR70Wm33Brz9vMExeFY9/view?usp=sharing"
+    },
+    {
+      "nome": "Tomate MDK 2074A",
+      "imagemRecurso": "Tomate MDK 2074A.jpg",
+      "driverUrl": "https://drive.google.com/file/d/1IE5PTPdtlMEIQmB4aTC9M2tSvfd1f2Ef/view?usp=sharing"
+    },
+    {
+      "nome": "Tomate MDK 005",
+      "imagemRecurso": "Tomate MDK 005.jpg",
+      "driverUrl": "https://drive.google.com/file/d/1Qm-zplzJ8QJBxqnmx_0_T-2E0GZQ6u3s/view?usp=sharing"
+    },
+    {
+      "nome": "Tomate MDK 006",
+      "imagemRecurso": "Tomate MDK 006.jpg",
+      "driverUrl": "https://drive.google.com/file/d/1aggvdhwuUAYKgcigVzY-zwUubRJ9S7ZP/view?usp=sharing"
+    },
+    {
+      "nome": "Tomate MDK 007",
+      "imagemRecurso": "Tomate MDK 007.jpg",
+      "driverUrl": "https://drive.google.com/file/d/1Gj61G5vjCt6N9xktPWNdYTq1noEzWyYg/view?usp=sharing"
+    },
+    {
+      "nome": "Tomate MDK 022",
+      "imagemRecurso": "Tomate MDK 022.jpg",
+      "driverUrl": "https://drive.google.com/file/d/1FMDWZRKpAG8EMR70Wm33Brz9vMExeFY9/view?usp=sharing"
+    }
+  ]
+}

@@ -2333,7 +2333,8 @@ namespace EtiquetaFORNew
                 //5. Ajuste dos demais botões para alinhar à direita
                 btnConfig.Left = panelTop.Width - btnConfig.Width - 15;
                 btnSincronizar.Left = btnConfig.Left - btnSincronizar.Width - 10;
-                btnDesigner.Left = btnSincronizar.Left - btnDesigner.Width - 10;
+                btnCalibracao.Left = btnSincronizar.Left - btnCalibracao.Width - 10;
+                btnDesigner.Left = btnCalibracao.Left - btnDesigner.Width - 10;
                 btnLimparTodos.Left = this.Width - btnLimparTodos.Width - 30;
                 btnImprimir.Left = this.Width - btnImprimir.Width - 30;
                 btnCarregar.Left = btnLimparTodos.Left - btnCarregar.Width - 10;
@@ -3583,6 +3584,19 @@ namespace EtiquetaFORNew
             MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
 }
+
+        private void btnCalibracao_Click(object sender, EventArgs e)
+        {
+            // Instancia o formulário (certifique-se que o nome da classe está correto)
+            using (calibracao form = new calibracao())
+            {
+                // Centraliza em relação ao formulário principal
+                form.StartPosition = FormStartPosition.CenterParent;
+
+                // Abre como modal
+                form.ShowDialog();
+            }
+        }
     }
 
 
