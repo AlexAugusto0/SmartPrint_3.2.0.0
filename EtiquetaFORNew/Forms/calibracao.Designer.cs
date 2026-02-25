@@ -28,21 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(calibracao));
             this.panelPrincipal = new System.Windows.Forms.Panel();
             this.panelConteudo = new System.Windows.Forms.Panel();
             this.groupBoxManual = new System.Windows.Forms.GroupBox();
             this.lblSelecione = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.btnAssistirCalibracao = new System.Windows.Forms.Button();
             this.panelTitulo = new System.Windows.Forms.Panel();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.lblTitulo = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.panelPrincipal.SuspendLayout();
             this.panelConteudo.SuspendLayout();
             this.groupBoxManual.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panelTitulo.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
@@ -64,10 +65,10 @@
             this.panelConteudo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelConteudo.Controls.Add(this.groupBoxManual);
             this.panelConteudo.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelConteudo.Location = new System.Drawing.Point(20, 80);
+            this.panelConteudo.Location = new System.Drawing.Point(20, 83);
             this.panelConteudo.Name = "panelConteudo";
             this.panelConteudo.Padding = new System.Windows.Forms.Padding(20);
-            this.panelConteudo.Size = new System.Drawing.Size(844, 461);
+            this.panelConteudo.Size = new System.Drawing.Size(844, 458);
             this.panelConteudo.TabIndex = 2;
             // 
             // groupBoxManual
@@ -82,7 +83,7 @@
             this.groupBoxManual.Location = new System.Drawing.Point(20, 20);
             this.groupBoxManual.Name = "groupBoxManual";
             this.groupBoxManual.Padding = new System.Windows.Forms.Padding(15);
-            this.groupBoxManual.Size = new System.Drawing.Size(802, 419);
+            this.groupBoxManual.Size = new System.Drawing.Size(802, 416);
             this.groupBoxManual.TabIndex = 1;
             this.groupBoxManual.TabStop = false;
             this.groupBoxManual.Text = "Selecione o Modelo da sua Etiquetadora:";
@@ -109,24 +110,14 @@
             this.comboBox1.TabIndex = 1;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox1.Location = new System.Drawing.Point(15, 110);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(400, 200);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 2;
-            this.pictureBox1.TabStop = false;
-            // 
             // btnAssistirCalibracao
             // 
-            this.btnAssistirCalibracao.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.btnAssistirCalibracao.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(143)))), ((int)(((byte)(0)))));
             this.btnAssistirCalibracao.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnAssistirCalibracao.FlatAppearance.BorderSize = 0;
             this.btnAssistirCalibracao.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAssistirCalibracao.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnAssistirCalibracao.ForeColor = System.Drawing.Color.White;
+            this.btnAssistirCalibracao.ForeColor = System.Drawing.Color.Black;
             this.btnAssistirCalibracao.Location = new System.Drawing.Point(15, 325);
             this.btnAssistirCalibracao.Name = "btnAssistirCalibracao";
             this.btnAssistirCalibracao.Size = new System.Drawing.Size(200, 40);
@@ -137,15 +128,36 @@
             // 
             // panelTitulo
             // 
-            this.panelTitulo.BackColor = System.Drawing.Color.DarkGray;
+            this.panelTitulo.BackColor = System.Drawing.Color.White;
             this.panelTitulo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelTitulo.Controls.Add(this.pictureBox2);
             this.panelTitulo.Controls.Add(this.lblTitulo);
             this.panelTitulo.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelTitulo.Location = new System.Drawing.Point(20, 20);
             this.panelTitulo.Name = "panelTitulo";
-            this.panelTitulo.Size = new System.Drawing.Size(844, 60);
+            this.panelTitulo.Size = new System.Drawing.Size(844, 63);
             this.panelTitulo.TabIndex = 0;
+            // 
+            // lblTitulo
+            // 
+            this.lblTitulo.AutoSize = true;
+            this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitulo.ForeColor = System.Drawing.Color.Black;
+            this.lblTitulo.Location = new System.Drawing.Point(63, 15);
+            this.lblTitulo.Name = "lblTitulo";
+            this.lblTitulo.Size = new System.Drawing.Size(334, 32);
+            this.lblTitulo.TabIndex = 0;
+            this.lblTitulo.Text = "Calibração de Etiquetadoras";
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox1.Location = new System.Drawing.Point(15, 110);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(400, 200);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 2;
+            this.pictureBox1.TabStop = false;
             // 
             // pictureBox2
             // 
@@ -157,17 +169,6 @@
             this.pictureBox2.TabIndex = 1;
             this.pictureBox2.TabStop = false;
             // 
-            // lblTitulo
-            // 
-            this.lblTitulo.AutoSize = true;
-            this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTitulo.ForeColor = System.Drawing.Color.Black;
-            this.lblTitulo.Location = new System.Drawing.Point(63, 15);
-            this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(281, 32);
-            this.lblTitulo.TabIndex = 0;
-            this.lblTitulo.Text = "Calibração de Etiquetas";
-            // 
             // calibracao
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -175,17 +176,19 @@
             this.ClientSize = new System.Drawing.Size(884, 561);
             this.Controls.Add(this.panelPrincipal);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(900, 600);
             this.Name = "calibracao";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Calibração das etiquetadoras";
             this.Load += new System.EventHandler(this.calibracao_Load);
             this.panelPrincipal.ResumeLayout(false);
             this.panelConteudo.ResumeLayout(false);
             this.groupBoxManual.ResumeLayout(false);
             this.groupBoxManual.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panelTitulo.ResumeLayout(false);
             this.panelTitulo.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
 
