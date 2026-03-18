@@ -25,7 +25,7 @@ namespace EtiquetaFORNew
             _httpClient.Timeout = TimeSpan.FromMinutes(5);
         }
 
-        #region AutenticaÃ§Ã£o
+        #region Autentição
 
         /// <summary>
         /// ObtÃ©m token de autenticaÃ§Ã£o

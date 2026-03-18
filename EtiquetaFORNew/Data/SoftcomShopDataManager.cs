@@ -237,10 +237,62 @@ namespace EtiquetaFORNew
         /// <summary>
         /// Processa tabelas de preço A, B, C, D, E
         /// </summary>
+        //private void ProcessarTabelaPrecos(SQLiteConnection conn, JToken produto)
+        //{
+        //    long produtoId = produto["produto_id"].ToObject<long>();
+        //    string codBarrasGrade = produto["codigo_barras_grade"]?.ToString() ?? "";
+        //    var tabelaPrecos = produto["tabela_precos"] as JArray;
+
+        //    if (tabelaPrecos == null) return;
+
+        //    foreach (var preco in tabelaPrecos)
+        //    {
+        //        string tipo = preco["descricao"]?.ToString() ?? "";
+        //        decimal valor = decimal.TryParse(preco["preco"]?.ToString().Replace(".", ","), out decimal v) ? v : 0;
+
+        //        string campo = null;
+        //        switch (tipo)
+        //        {
+        //            case "A":
+        //                campo = "VendaA";
+        //                break;
+        //            case "B":
+        //                campo = "VendaB";
+        //                break;
+        //            case "C":
+        //                campo = "VendaC";
+        //                break;
+        //            case "D":
+        //                campo = "VendaD";
+        //                break;
+        //            case "E":
+        //                campo = "VendaE";
+        //                break;
+        //        }
+
+        //        if (campo != null)
+        //        {
+        //            var cmd = new SQLiteCommand($@"
+        //                UPDATE Mercadorias 
+        //                SET {campo} = @valor
+        //                WHERE ID_SoftcomShop = @id 
+        //                {(string.IsNullOrEmpty(codBarrasGrade) ? "" : "OR CodBarras_Grade = @codBarrasGrade")}
+        //            ", conn);
+
+        //            cmd.Parameters.AddWithValue("@valor", valor);
+        //            cmd.Parameters.AddWithValue("@id", produtoId);
+        //            if (!string.IsNullOrEmpty(codBarrasGrade))
+        //                cmd.Parameters.AddWithValue("@codBarrasGrade", codBarrasGrade);
+
+        //            cmd.ExecuteNonQuery();
+        //        }
+        //    }
+        //}
         private void ProcessarTabelaPrecos(SQLiteConnection conn, JToken produto)
         {
             long produtoId = produto["produto_id"].ToObject<long>();
-            string codBarrasGrade = produto["codigo_barras_grade"]?.ToString() ?? "";
+            // IMPORTANTE: Se o produto não tem grade, não devemos tentar filtrar por ela no OR
+            string codBarrasGrade = produto["codigo_barras_grade"]?.ToString();
             var tabelaPrecos = produto["tabela_precos"] as JArray;
 
             if (tabelaPrecos == null) return;
@@ -253,42 +305,37 @@ namespace EtiquetaFORNew
                 string campo = null;
                 switch (tipo)
                 {
-                    case "A":
-                        campo = "VendaA";
-                        break;
-                    case "B":
-                        campo = "VendaB";
-                        break;
-                    case "C":
-                        campo = "VendaC";
-                        break;
-                    case "D":
-                        campo = "VendaD";
-                        break;
-                    case "E":
-                        campo = "VendaE";
-                        break;
+                    case "A": campo = "VendaA"; break;
+                    case "B": campo = "VendaB"; break;
+                    case "C": campo = "VendaC"; break;
+                    case "D": campo = "VendaD"; break;
+                    case "E": campo = "VendaE"; break;
                 }
 
                 if (campo != null)
                 {
-                    var cmd = new SQLiteCommand($@"
-                        UPDATE Mercadorias 
-                        SET {campo} = @valor
-                        WHERE ID_SoftcomShop = @id 
-                        {(string.IsNullOrEmpty(codBarrasGrade) ? "" : "OR CodBarras_Grade = @codBarrasGrade")}
-                    ", conn);
+                    // Melhorei a lógica do WHERE para ser mais restritiva
+                    string sql = $@"UPDATE Mercadorias SET {campo} = @valor WHERE ID_SoftcomShop = @id";
 
-                    cmd.Parameters.AddWithValue("@valor", valor);
-                    cmd.Parameters.AddWithValue("@id", produtoId);
-                    if (!string.IsNullOrEmpty(codBarrasGrade))
-                        cmd.Parameters.AddWithValue("@codBarrasGrade", codBarrasGrade);
+                    // Só adiciona o filtro de grade se ele realmente existir e não for vazio
+                    if (!string.IsNullOrWhiteSpace(codBarrasGrade))
+                    {
+                        sql += " AND CodBarras_Grade = @codBarrasGrade";
+                    }
 
-                    cmd.ExecuteNonQuery();
+                    using (var cmd = new SQLiteCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@valor", valor);
+                        cmd.Parameters.AddWithValue("@id", produtoId);
+
+                        if (!string.IsNullOrWhiteSpace(codBarrasGrade))
+                            cmd.Parameters.AddWithValue("@codBarrasGrade", codBarrasGrade);
+
+                        cmd.ExecuteNonQuery();
+                    }
                 }
             }
         }
-
         /// <summary>
         /// Processa atributos de grade (TAM/COR)
         /// </summary>
