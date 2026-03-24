@@ -181,5 +181,11 @@ namespace EtiquetaFORNew.Forms
                 }
             }
         }
+
+        private void btndriver_Click(object sender, EventArgs e)
+        {
+            telaTecnico tela = new telaTecnico();
+            tela.ShowDialog();
+        }
     }
 }

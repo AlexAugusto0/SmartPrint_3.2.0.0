@@ -512,6 +512,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="etiqueta-icone-softcom.ico" />
+    <None Include="Resources\Drivers1.jpg" />
     <None Include="Resources\calibracao3.png" />
     <None Include="Resources\calibracao21.png" />
     <None Include="Resources\calibracao2.png" />

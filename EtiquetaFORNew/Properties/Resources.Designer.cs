@@ -123,6 +123,16 @@ namespace EtiquetaFORNew.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Drivers1 {
+            get {
+                object obj = ResourceManager.GetObject("Drivers1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Engrenagem {
             get {
                 object obj = ResourceManager.GetObject("Engrenagem", resourceCulture);

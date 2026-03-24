@@ -28,18 +28,21 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(calibracao));
             this.panelPrincipal = new System.Windows.Forms.Panel();
             this.panelConteudo = new System.Windows.Forms.Panel();
             this.groupBoxManual = new System.Windows.Forms.GroupBox();
+            this.Calibrar = new System.Windows.Forms.Button();
             this.lblSelecione = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.btnAssistirCalibracao = new System.Windows.Forms.Button();
             this.panelTitulo = new System.Windows.Forms.Panel();
+            this.btndriver = new System.Windows.Forms.Button();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.lblTitulo = new System.Windows.Forms.Label();
-            this.Calibrar = new System.Windows.Forms.Button();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.panelPrincipal.SuspendLayout();
             this.panelConteudo.SuspendLayout();
             this.groupBoxManual.SuspendLayout();
@@ -90,6 +93,22 @@
             this.groupBoxManual.TabStop = false;
             this.groupBoxManual.Text = "Selecione o Modelo da sua Etiquetadora:";
             this.groupBoxManual.Visible = false;
+            // 
+            // Calibrar
+            // 
+            this.Calibrar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(143)))), ((int)(((byte)(0)))));
+            this.Calibrar.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.Calibrar.FlatAppearance.BorderSize = 0;
+            this.Calibrar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.Calibrar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Calibrar.ForeColor = System.Drawing.Color.Black;
+            this.Calibrar.Location = new System.Drawing.Point(234, 325);
+            this.Calibrar.Name = "Calibrar";
+            this.Calibrar.Size = new System.Drawing.Size(181, 40);
+            this.Calibrar.TabIndex = 4;
+            this.Calibrar.Text = "Calibrar";
+            this.Calibrar.UseVisualStyleBackColor = false;
+            this.Calibrar.Click += new System.EventHandler(this.btnCalibrarAgora_Click);
             // 
             // lblSelecione
             // 
@@ -142,6 +161,7 @@
             // 
             this.panelTitulo.BackColor = System.Drawing.Color.White;
             this.panelTitulo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelTitulo.Controls.Add(this.btndriver);
             this.panelTitulo.Controls.Add(this.pictureBox2);
             this.panelTitulo.Controls.Add(this.lblTitulo);
             this.panelTitulo.Dock = System.Windows.Forms.DockStyle.Top;
@@ -149,6 +169,21 @@
             this.panelTitulo.Name = "panelTitulo";
             this.panelTitulo.Size = new System.Drawing.Size(844, 63);
             this.panelTitulo.TabIndex = 0;
+            // 
+            // btndriver
+            // 
+            this.btndriver.BackColor = System.Drawing.Color.Transparent;
+            this.btndriver.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btndriver.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btndriver.FlatAppearance.BorderSize = 0;
+            this.btndriver.Image = global::EtiquetaFORNew.Properties.Resources.pngegg30x30;
+            this.btndriver.Location = new System.Drawing.Point(777, 15);
+            this.btndriver.Name = "btndriver";
+            this.btndriver.Size = new System.Drawing.Size(45, 34);
+            this.btndriver.TabIndex = 15;
+            this.toolTip1.SetToolTip(this.btndriver, "Instalação de Drivers");
+            this.btndriver.UseVisualStyleBackColor = false;
+            this.btndriver.Click += new System.EventHandler(this.btndriver_Click);
             // 
             // pictureBox2
             // 
@@ -170,22 +205,6 @@
             this.lblTitulo.Size = new System.Drawing.Size(334, 32);
             this.lblTitulo.TabIndex = 0;
             this.lblTitulo.Text = "Calibração de Etiquetadoras";
-            // 
-            // Calibrar
-            // 
-            this.Calibrar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(143)))), ((int)(((byte)(0)))));
-            this.Calibrar.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.Calibrar.FlatAppearance.BorderSize = 0;
-            this.Calibrar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.Calibrar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Calibrar.ForeColor = System.Drawing.Color.Black;
-            this.Calibrar.Location = new System.Drawing.Point(234, 325);
-            this.Calibrar.Name = "Calibrar";
-            this.Calibrar.Size = new System.Drawing.Size(181, 40);
-            this.Calibrar.TabIndex = 4;
-            this.Calibrar.Text = "Calibrar";
-            this.Calibrar.UseVisualStyleBackColor = false;
-            this.Calibrar.Click += new System.EventHandler(this.btnCalibrarAgora_Click);
             // 
             // calibracao
             // 
@@ -225,5 +244,7 @@
         private System.Windows.Forms.Button btnAssistirCalibracao;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Button Calibrar;
+        private System.Windows.Forms.Button btndriver;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

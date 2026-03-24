@@ -1517,6 +1517,101 @@ namespace EtiquetaFORNew.Forms
         /// elementos e das bordas da etiqueta. Quando dentro do limiar SNAP_THRESHOLD_PX,
         /// adiciona a linha guia à lista para ser desenhada no Paint.
         /// </summary>
+        //private void AtualizarLinhasGuia(RectangleF rectEtiqueta)
+        //{
+        //    linhasGuiaAtivas.Clear();
+
+        //    if (!snapAtivo) return;
+        //    if (elementoSelecionado == null && elementosSelecionados.Count == 0) return;
+
+        //    float scale = MM_PARA_PIXEL * zoom;
+        //    float thresholdMM = SNAP_THRESHOLD_PX / scale;
+
+        //    // ------------------------------------------------------------------
+        //    // Calcular bounds atual do elemento sendo arrastado (em MM, com delta)
+        //    // ------------------------------------------------------------------
+        //    float deltaXMM = deltaArrasto.X / scale;
+        //    float deltaYMM = deltaArrasto.Y / scale;
+
+        //    RectangleF b;
+        //    if (elementoSelecionado != null)
+        //    {
+        //        b = new RectangleF(
+        //            elementoSelecionado.Bounds.X + deltaXMM,
+        //            elementoSelecionado.Bounds.Y + deltaYMM,
+        //            elementoSelecionado.Bounds.Width,
+        //            elementoSelecionado.Bounds.Height);
+        //    }
+        //    else
+        //    {
+        //        // seleção múltipla: usar o bounding box do conjunto
+        //        float minX = elementosSelecionados.Min(el => el.Bounds.X) + deltaXMM;
+        //        float minY = elementosSelecionados.Min(el => el.Bounds.Y) + deltaYMM;
+        //        float maxX = elementosSelecionados.Max(el => el.Bounds.Right) + deltaXMM;
+        //        float maxY = elementosSelecionados.Max(el => el.Bounds.Bottom) + deltaYMM;
+        //        b = new RectangleF(minX, minY, maxX - minX, maxY - minY);
+        //    }
+
+        //    // Pontos de interesse do elemento arrastado (em MM)
+        //    float[] bX = { b.Left, b.Left + b.Width / 2f, b.Right };
+        //    float[] bY = { b.Top,  b.Top  + b.Height / 2f, b.Bottom };
+
+        //    // ------------------------------------------------------------------
+        //    // Referências: bordas da etiqueta + bordas dos outros elementos
+        //    // ------------------------------------------------------------------
+        //    var refX = new List<float> { 0f, configuracao.LarguraEtiqueta / 2f, configuracao.LarguraEtiqueta };
+        //    var refY = new List<float> { 0f, configuracao.AlturaEtiqueta / 2f,  configuracao.AlturaEtiqueta };
+
+        //    foreach (var outro in template.Elementos)
+        //    {
+        //        // Ignorar o próprio elemento (ou os elementos da seleção múltipla)
+        //        if (outro == elementoSelecionado) continue;
+        //        if (elementosSelecionados.Contains(outro)) continue;
+
+        //        refX.Add(outro.Bounds.X);
+        //        refX.Add(outro.Bounds.X + outro.Bounds.Width / 2f);
+        //        refX.Add(outro.Bounds.Right);
+
+        //        refY.Add(outro.Bounds.Y);
+        //        refY.Add(outro.Bounds.Y + outro.Bounds.Height / 2f);
+        //        refY.Add(outro.Bounds.Bottom);
+        //    }
+
+        //    // ------------------------------------------------------------------
+        //    // Detectar alinhamentos e converter para pixels para desenho
+        //    // ------------------------------------------------------------------
+        //    var adicionadasX = new HashSet<float>();
+        //    var adicionadasY = new HashSet<float>();
+
+        //    foreach (float bx in bX)
+        //    {
+        //        foreach (float rx in refX)
+        //        {
+        //            if (Math.Abs(bx - rx) <= thresholdMM)
+        //            {
+        //                float px = rectEtiqueta.X + rx * scale;
+        //                // Evitar linhas duplicadas (arredondado a 1px)
+        //                float chave = (float)Math.Round(px);
+        //                if (adicionadasX.Add(chave))
+        //                    linhasGuiaAtivas.Add((true, px));
+        //            }
+        //        }
+        //    }
+
+        //    foreach (float by in bY)
+        //    {
+        //        foreach (float ry in refY)
+        //        {
+        //            if (Math.Abs(by - ry) <= thresholdMM)
+        //            {
+        //                float py = rectEtiqueta.Y + ry * scale;
+        //                float chave = (float)Math.Round(py);
+        //                if (adicionadasY.Add(chave))
+        //                    linhasGuiaAtivas.Add((false, py));
+        //            }
+        //        }
+        //    }
+        //}
         private void AtualizarLinhasGuia(RectangleF rectEtiqueta)
         {
             linhasGuiaAtivas.Clear();
@@ -1527,12 +1622,10 @@ namespace EtiquetaFORNew.Forms
             float scale = MM_PARA_PIXEL * zoom;
             float thresholdMM = SNAP_THRESHOLD_PX / scale;
 
-            // ------------------------------------------------------------------
-            // Calcular bounds atual do elemento sendo arrastado (em MM, com delta)
-            // ------------------------------------------------------------------
             float deltaXMM = deltaArrasto.X / scale;
             float deltaYMM = deltaArrasto.Y / scale;
 
+            // Calculamos o bounding box atual (com o movimento do mouse)
             RectangleF b;
             if (elementoSelecionado != null)
             {
@@ -1544,7 +1637,6 @@ namespace EtiquetaFORNew.Forms
             }
             else
             {
-                // seleção múltipla: usar o bounding box do conjunto
                 float minX = elementosSelecionados.Min(el => el.Bounds.X) + deltaXMM;
                 float minY = elementosSelecionados.Min(el => el.Bounds.Y) + deltaYMM;
                 float maxX = elementosSelecionados.Max(el => el.Bounds.Right) + deltaXMM;
@@ -1552,64 +1644,69 @@ namespace EtiquetaFORNew.Forms
                 b = new RectangleF(minX, minY, maxX - minX, maxY - minY);
             }
 
-            // Pontos de interesse do elemento arrastado (em MM)
-            float[] bX = { b.Left, b.Left + b.Width / 2f, b.Right };
-            float[] bY = { b.Top,  b.Top  + b.Height / 2f, b.Bottom };
-
-            // ------------------------------------------------------------------
-            // Referências: bordas da etiqueta + bordas dos outros elementos
-            // ------------------------------------------------------------------
+            // Referências da etiqueta e outros elementos
             var refX = new List<float> { 0f, configuracao.LarguraEtiqueta / 2f, configuracao.LarguraEtiqueta };
-            var refY = new List<float> { 0f, configuracao.AlturaEtiqueta / 2f,  configuracao.AlturaEtiqueta };
+            var refY = new List<float> { 0f, configuracao.AlturaEtiqueta / 2f, configuracao.AlturaEtiqueta };
+            // ... (seu foreach que popula refX e refY continua igual)
 
-            foreach (var outro in template.Elementos)
-            {
-                // Ignorar o próprio elemento (ou os elementos da seleção múltipla)
-                if (outro == elementoSelecionado) continue;
-                if (elementosSelecionados.Contains(outro)) continue;
+            // VARIÁVEIS PARA O SNAP (MAGNÉTICO)
+            float melhorDeltaX = float.MaxValue;
+            float melhorDeltaY = float.MaxValue;
+            bool snapX = false;
+            bool snapY = false;
 
-                refX.Add(outro.Bounds.X);
-                refX.Add(outro.Bounds.X + outro.Bounds.Width / 2f);
-                refX.Add(outro.Bounds.Right);
+            // Pontos do elemento arrastado
+            float[] bX = { b.Left, b.Left + b.Width / 2f, b.Right };
+            float[] bY = { b.Top, b.Top + b.Height / 2f, b.Bottom };
 
-                refY.Add(outro.Bounds.Y);
-                refY.Add(outro.Bounds.Y + outro.Bounds.Height / 2f);
-                refY.Add(outro.Bounds.Bottom);
-            }
-
-            // ------------------------------------------------------------------
-            // Detectar alinhamentos e converter para pixels para desenho
-            // ------------------------------------------------------------------
-            var adicionadasX = new HashSet<float>();
-            var adicionadasY = new HashSet<float>();
-
+            // --- SNAP VERTICAL (Eixo X) ---
             foreach (float bx in bX)
             {
                 foreach (float rx in refX)
                 {
-                    if (Math.Abs(bx - rx) <= thresholdMM)
+                    float diff = rx - bx;
+                    if (Math.Abs(diff) <= thresholdMM)
                     {
-                        float px = rectEtiqueta.X + rx * scale;
-                        // Evitar linhas duplicadas (arredondado a 1px)
-                        float chave = (float)Math.Round(px);
-                        if (adicionadasX.Add(chave))
+                        if (Math.Abs(diff) < Math.Abs(melhorDeltaX))
+                        {
+                            melhorDeltaX = diff;
+                            snapX = true;
+                            // Guardamos para desenhar a linha depois
+                            float px = rectEtiqueta.X + rx * scale;
                             linhasGuiaAtivas.Add((true, px));
+                        }
                     }
                 }
             }
 
+            // --- SNAP HORIZONTAL (Eixo Y) ---
             foreach (float by in bY)
             {
                 foreach (float ry in refY)
                 {
-                    if (Math.Abs(by - ry) <= thresholdMM)
+                    float diff = ry - by;
+                    if (Math.Abs(diff) <= thresholdMM)
                     {
-                        float py = rectEtiqueta.Y + ry * scale;
-                        float chave = (float)Math.Round(py);
-                        if (adicionadasY.Add(chave))
+                        if (Math.Abs(diff) < Math.Abs(melhorDeltaY))
+                        {
+                            melhorDeltaY = diff;
+                            snapY = true;
+                            float py = rectEtiqueta.Y + ry * scale;
                             linhasGuiaAtivas.Add((false, py));
+                        }
                     }
                 }
+            }
+
+            // APLICAR O MAGNETISMO NO DELTA
+            if (snapX)
+            {
+                // Ajustamos o deltaArrasto para compensar a distância até a linha
+                deltaArrasto.X += (int)(melhorDeltaX * scale);
+            }
+            if (snapY)
+            {
+                deltaArrasto.Y += (int)(melhorDeltaY * scale);
             }
         }
 
@@ -2278,7 +2375,7 @@ namespace EtiquetaFORNew.Forms
                 // =========================================================
                 // ATUALIZAR LINHAS GUIA A CADA MOVIMENTO
                 // =========================================================
-                //AtualizarLinhasGuia(rectEtiqueta);
+                AtualizarLinhasGuia(rectEtiqueta);
                 // =========================================================
 
                 pbCanvas.Invalidate();
@@ -2340,9 +2437,136 @@ namespace EtiquetaFORNew.Forms
             }
         }
 
+        //private void PbCanvas_MouseUp(object sender, MouseEventArgs e)
+        //{
+
+        //    RectangleF rectEtiqueta = new RectangleF(25, 25,
+        //        configuracao.LarguraEtiqueta * MM_PARA_PIXEL * zoom,
+        //        configuracao.AlturaEtiqueta * MM_PARA_PIXEL * zoom);
+
+        //    if (selecionandoComRetangulo)
+        //    {
+        //        selecionandoComRetangulo = false;
+        //        elementosSelecionados.Clear();
+        //        foreach (var elemento in template.Elementos)
+        //        {
+        //            Rectangle bounds = ConverterParaPixels(elemento.Bounds, rectEtiqueta);
+        //            if (retanguloSelecao.IntersectsWith(bounds))
+        //                elementosSelecionados.Add(elemento);
+        //        }
+        //        pbCanvas.Invalidate();
+        //        return;
+        //    }
+
+        //    if (arrastando && deltaArrasto != Point.Empty)
+        //    {
+        //        SalvarEstadoHistorico();
+        //        float scale    = MM_PARA_PIXEL * zoom;
+        //        float thresholdMM = SNAP_THRESHOLD_PX / scale;
+
+        //        float deltaXMM = deltaArrasto.X / scale;
+        //        float deltaYMM = deltaArrasto.Y / scale;
+
+        //        // =========================================================
+        //        // SNAP MAGNÉTICO: ajusta a posição final se houver linha guia ativa
+        //        // =========================================================
+        //        if (snapAtivo && linhasGuiaAtivas.Count > 0 && elementoSelecionado != null)
+        //        {
+        //            float novoX = elementoSelecionado.Bounds.X + deltaXMM;
+        //            float novoY = elementoSelecionado.Bounds.Y + deltaYMM;
+        //            float w     = elementoSelecionado.Bounds.Width;
+        //            float h     = elementoSelecionado.Bounds.Height;
+
+        //            float[] bX = { novoX, novoX + w / 2f, novoX + w };
+        //            float[] bY = { novoY, novoY + h / 2f, novoY + h };
+
+        //            var refX = new List<float> { 0f, configuracao.LarguraEtiqueta / 2f, configuracao.LarguraEtiqueta };
+        //            var refY = new List<float> { 0f, configuracao.AlturaEtiqueta  / 2f, configuracao.AlturaEtiqueta  };
+        //            foreach (var outro in template.Elementos)
+        //            {
+        //                if (outro == elementoSelecionado) continue;
+        //                refX.AddRange(new[] { (float)outro.Bounds.X, outro.Bounds.X + outro.Bounds.Width / 2f, (float)outro.Bounds.Right });
+        //                refY.AddRange(new[] { (float)outro.Bounds.Y, outro.Bounds.Y + outro.Bounds.Height / 2f, (float)outro.Bounds.Bottom });
+        //            }
+
+        //            // Encontrar o snap mais próximo em X
+        //            float melhorDX = float.MaxValue;
+        //            float ajusteX  = 0;
+        //            for (int i = 0; i < bX.Length; i++)
+        //            {
+        //                foreach (float rx in refX)
+        //                {
+        //                    float diff = bX[i] - rx;
+        //                    if (Math.Abs(diff) < Math.Abs(melhorDX) && Math.Abs(diff) <= thresholdMM)
+        //                    {
+        //                        melhorDX = diff;
+        //                        // offset para mover novoX de modo que bX[i] == rx
+        //                        ajusteX = -(diff);
+        //                        if (i == 1) ajusteX += 0; // centro já alinha
+        //                    }
+        //                }
+        //            }
+
+        //            // Encontrar o snap mais próximo em Y
+        //            float melhorDY = float.MaxValue;
+        //            float ajusteY  = 0;
+        //            for (int i = 0; i < bY.Length; i++)
+        //            {
+        //                foreach (float ry in refY)
+        //                {
+        //                    float diff = bY[i] - ry;
+        //                    if (Math.Abs(diff) < Math.Abs(melhorDY) && Math.Abs(diff) <= thresholdMM)
+        //                    {
+        //                        melhorDY = diff;
+        //                        ajusteY  = -(diff);
+        //                    }
+        //                }
+        //            }
+
+        //            if (Math.Abs(melhorDX) <= thresholdMM) deltaXMM += ajusteX;
+        //            if (Math.Abs(melhorDY) <= thresholdMM) deltaYMM += ajusteY;
+        //        }
+        //        // =========================================================
+
+        //        if (elementoSelecionado != null)
+        //        {
+        //            elementoSelecionado.Bounds = new Rectangle(
+        //                (int)(elementoSelecionado.Bounds.X + deltaXMM),
+        //                (int)(elementoSelecionado.Bounds.Y + deltaYMM),
+        //                elementoSelecionado.Bounds.Width,
+        //                elementoSelecionado.Bounds.Height
+        //            );
+        //        }
+
+        //        foreach (var elemento in elementosSelecionados)
+        //        {
+        //            elemento.Bounds = new Rectangle(
+        //                (int)(elemento.Bounds.X + deltaXMM),
+        //                (int)(elemento.Bounds.Y + deltaYMM),
+        //                elemento.Bounds.Width,
+        //                elemento.Bounds.Height
+        //            );
+        //        }
+
+        //        deltaArrasto = Point.Empty;
+        //        pbCanvas.Invalidate();
+        //    }
+
+        //    // =========================================================
+        //    // LIMPAR LINHAS GUIA AO SOLTAR O MOUSE
+        //    // =========================================================
+        //    linhasGuiaAtivas.Clear();
+        //    // =========================================================
+
+        //    arrastando     = false;
+        //    redimensionando = false;
+        //    rotacionando   = false;
+        //    handleSelecionado = -1;
+        //    pbCanvas.Cursor = Cursors.Default;
+        //    pbCanvas.Invalidate();
+        //}
         private void PbCanvas_MouseUp(object sender, MouseEventArgs e)
         {
-            
             RectangleF rectEtiqueta = new RectangleF(25, 25,
                 configuracao.LarguraEtiqueta * MM_PARA_PIXEL * zoom,
                 configuracao.AlturaEtiqueta * MM_PARA_PIXEL * zoom);
@@ -2363,107 +2587,49 @@ namespace EtiquetaFORNew.Forms
 
             if (arrastando && deltaArrasto != Point.Empty)
             {
-                SalvarEstadoHistorico();
-                float scale    = MM_PARA_PIXEL * zoom;
-                float thresholdMM = SNAP_THRESHOLD_PX / scale;
+                float scale = MM_PARA_PIXEL * zoom;
 
-                float deltaXMM = deltaArrasto.X / scale;
-                float deltaYMM = deltaArrasto.Y / scale;
+                // 1. Calculamos quanto o mouse moveu em MM
+                float moveXMM = deltaArrasto.X / scale;
+                float moveYMM = deltaArrasto.Y / scale;
 
-                // =========================================================
-                // SNAP MAGNÉTICO: ajusta a posição final se houver linha guia ativa
-                // =========================================================
-                if (snapAtivo && linhasGuiaAtivas.Count > 0 && elementoSelecionado != null)
-                {
-                    float novoX = elementoSelecionado.Bounds.X + deltaXMM;
-                    float novoY = elementoSelecionado.Bounds.Y + deltaYMM;
-                    float w     = elementoSelecionado.Bounds.Width;
-                    float h     = elementoSelecionado.Bounds.Height;
-
-                    float[] bX = { novoX, novoX + w / 2f, novoX + w };
-                    float[] bY = { novoY, novoY + h / 2f, novoY + h };
-
-                    var refX = new List<float> { 0f, configuracao.LarguraEtiqueta / 2f, configuracao.LarguraEtiqueta };
-                    var refY = new List<float> { 0f, configuracao.AlturaEtiqueta  / 2f, configuracao.AlturaEtiqueta  };
-                    foreach (var outro in template.Elementos)
-                    {
-                        if (outro == elementoSelecionado) continue;
-                        refX.AddRange(new[] { (float)outro.Bounds.X, outro.Bounds.X + outro.Bounds.Width / 2f, (float)outro.Bounds.Right });
-                        refY.AddRange(new[] { (float)outro.Bounds.Y, outro.Bounds.Y + outro.Bounds.Height / 2f, (float)outro.Bounds.Bottom });
-                    }
-
-                    // Encontrar o snap mais próximo em X
-                    float melhorDX = float.MaxValue;
-                    float ajusteX  = 0;
-                    for (int i = 0; i < bX.Length; i++)
-                    {
-                        foreach (float rx in refX)
-                        {
-                            float diff = bX[i] - rx;
-                            if (Math.Abs(diff) < Math.Abs(melhorDX) && Math.Abs(diff) <= thresholdMM)
-                            {
-                                melhorDX = diff;
-                                // offset para mover novoX de modo que bX[i] == rx
-                                ajusteX = -(diff);
-                                if (i == 1) ajusteX += 0; // centro já alinha
-                            }
-                        }
-                    }
-
-                    // Encontrar o snap mais próximo em Y
-                    float melhorDY = float.MaxValue;
-                    float ajusteY  = 0;
-                    for (int i = 0; i < bY.Length; i++)
-                    {
-                        foreach (float ry in refY)
-                        {
-                            float diff = bY[i] - ry;
-                            if (Math.Abs(diff) < Math.Abs(melhorDY) && Math.Abs(diff) <= thresholdMM)
-                            {
-                                melhorDY = diff;
-                                ajusteY  = -(diff);
-                            }
-                        }
-                    }
-
-                    if (Math.Abs(melhorDX) <= thresholdMM) deltaXMM += ajusteX;
-                    if (Math.Abs(melhorDY) <= thresholdMM) deltaYMM += ajusteY;
-                }
-                // =========================================================
-
+                // 2. Aplicamos aos elementos usando Round (evita o pulo de 1px)
                 if (elementoSelecionado != null)
                 {
                     elementoSelecionado.Bounds = new Rectangle(
-                        (int)(elementoSelecionado.Bounds.X + deltaXMM),
-                        (int)(elementoSelecionado.Bounds.Y + deltaYMM),
+                        (int)Math.Round(elementoSelecionado.Bounds.X + moveXMM),
+                        (int)Math.Round(elementoSelecionado.Bounds.Y + moveYMM),
                         elementoSelecionado.Bounds.Width,
                         elementoSelecionado.Bounds.Height
                     );
                 }
 
-                foreach (var elemento in elementosSelecionados)
+                foreach (var el in elementosSelecionados)
                 {
-                    elemento.Bounds = new Rectangle(
-                        (int)(elemento.Bounds.X + deltaXMM),
-                        (int)(elemento.Bounds.Y + deltaYMM),
-                        elemento.Bounds.Width,
-                        elemento.Bounds.Height
+                    el.Bounds = new Rectangle(
+                        (int)Math.Round(el.Bounds.X + moveXMM),
+                        (int)Math.Round(el.Bounds.Y + moveYMM),
+                        el.Bounds.Width,
+                        el.Bounds.Height
                     );
                 }
 
+                // 3. SALVAR HISTÓRICO (Aqui o Ctrl+Z registra a posição final correta)
+                SalvarEstadoHistorico();
+
+                // 4. ZERAR O DELTA (Essencial para não somar de novo no próximo Paint)
                 deltaArrasto = Point.Empty;
+                arrastando = false;
+                linhasGuiaAtivas.Clear();
+
                 pbCanvas.Invalidate();
             }
 
-            // =========================================================
-            // LIMPAR LINHAS GUIA AO SOLTAR O MOUSE
-            // =========================================================
+            // Limpeza final
             linhasGuiaAtivas.Clear();
-            // =========================================================
-
-            arrastando     = false;
+            arrastando = false;
             redimensionando = false;
-            rotacionando   = false;
+            rotacionando = false;
             handleSelecionado = -1;
             pbCanvas.Cursor = Cursors.Default;
             pbCanvas.Invalidate();

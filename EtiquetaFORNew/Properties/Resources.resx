@@ -130,6 +130,9 @@
   <data name="calibracao21" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\calibracao21.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="calibracao3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\calibracao3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="SoftcomTecnologia2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SoftcomTecnologia2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -202,7 +205,7 @@
   <data name="EtiquetaFOR (2)" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\EtiquetaFOR (2).png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="calibracao3" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\calibracao3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Drivers1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Drivers1.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
