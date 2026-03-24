@@ -34,16 +34,17 @@
             this.groupBoxManual = new System.Windows.Forms.GroupBox();
             this.lblSelecione = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.btnAssistirCalibracao = new System.Windows.Forms.Button();
             this.panelTitulo = new System.Windows.Forms.Panel();
-            this.lblTitulo = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.lblTitulo = new System.Windows.Forms.Label();
+            this.Calibrar = new System.Windows.Forms.Button();
             this.panelPrincipal.SuspendLayout();
             this.panelConteudo.SuspendLayout();
             this.groupBoxManual.SuspendLayout();
-            this.panelTitulo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panelTitulo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
@@ -73,6 +74,7 @@
             // 
             // groupBoxManual
             // 
+            this.groupBoxManual.Controls.Add(this.Calibrar);
             this.groupBoxManual.Controls.Add(this.lblSelecione);
             this.groupBoxManual.Controls.Add(this.comboBox1);
             this.groupBoxManual.Controls.Add(this.pictureBox1);
@@ -110,6 +112,16 @@
             this.comboBox1.TabIndex = 1;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox1.Location = new System.Drawing.Point(15, 110);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(400, 200);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 2;
+            this.pictureBox1.TabStop = false;
+            // 
             // btnAssistirCalibracao
             // 
             this.btnAssistirCalibracao.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(143)))), ((int)(((byte)(0)))));
@@ -120,7 +132,7 @@
             this.btnAssistirCalibracao.ForeColor = System.Drawing.Color.Black;
             this.btnAssistirCalibracao.Location = new System.Drawing.Point(15, 325);
             this.btnAssistirCalibracao.Name = "btnAssistirCalibracao";
-            this.btnAssistirCalibracao.Size = new System.Drawing.Size(200, 40);
+            this.btnAssistirCalibracao.Size = new System.Drawing.Size(181, 40);
             this.btnAssistirCalibracao.TabIndex = 3;
             this.btnAssistirCalibracao.Text = "Assistir";
             this.btnAssistirCalibracao.UseVisualStyleBackColor = false;
@@ -138,6 +150,16 @@
             this.panelTitulo.Size = new System.Drawing.Size(844, 63);
             this.panelTitulo.TabIndex = 0;
             // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Image = global::EtiquetaFORNew.Properties.Resources.icone_novo_2025_PNG;
+            this.pictureBox2.Location = new System.Drawing.Point(3, 3);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(67, 54);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox2.TabIndex = 1;
+            this.pictureBox2.TabStop = false;
+            // 
             // lblTitulo
             // 
             this.lblTitulo.AutoSize = true;
@@ -149,25 +171,21 @@
             this.lblTitulo.TabIndex = 0;
             this.lblTitulo.Text = "Calibração de Etiquetadoras";
             // 
-            // pictureBox1
+            // Calibrar
             // 
-            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox1.Location = new System.Drawing.Point(15, 110);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(400, 200);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 2;
-            this.pictureBox1.TabStop = false;
-            // 
-            // pictureBox2
-            // 
-            this.pictureBox2.Image = global::EtiquetaFORNew.Properties.Resources.icone_novo_2025_PNG;
-            this.pictureBox2.Location = new System.Drawing.Point(3, 3);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(67, 54);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox2.TabIndex = 1;
-            this.pictureBox2.TabStop = false;
+            this.Calibrar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(143)))), ((int)(((byte)(0)))));
+            this.Calibrar.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.Calibrar.FlatAppearance.BorderSize = 0;
+            this.Calibrar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.Calibrar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Calibrar.ForeColor = System.Drawing.Color.Black;
+            this.Calibrar.Location = new System.Drawing.Point(234, 325);
+            this.Calibrar.Name = "Calibrar";
+            this.Calibrar.Size = new System.Drawing.Size(181, 40);
+            this.Calibrar.TabIndex = 4;
+            this.Calibrar.Text = "Calibrar";
+            this.Calibrar.UseVisualStyleBackColor = false;
+            this.Calibrar.Click += new System.EventHandler(this.btnCalibrarAgora_Click);
             // 
             // calibracao
             // 
@@ -186,9 +204,9 @@
             this.panelConteudo.ResumeLayout(false);
             this.groupBoxManual.ResumeLayout(false);
             this.groupBoxManual.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panelTitulo.ResumeLayout(false);
             this.panelTitulo.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
 
@@ -206,5 +224,6 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button btnAssistirCalibracao;
         private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.Button Calibrar;
     }
 }

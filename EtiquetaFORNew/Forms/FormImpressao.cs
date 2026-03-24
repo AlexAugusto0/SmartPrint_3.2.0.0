@@ -482,7 +482,7 @@ namespace EtiquetaFORNew
                 case "Codigo":
                     return produto.Codigo ?? "";
                 case "Preco":
-                    return produto.Preco.ToString("C2");
+                    return produto.Preco.ToString("F2");
                 case "Quantidade":
                     return produto.Quantidade.ToString();
                 case "CodFabricante":
@@ -496,17 +496,17 @@ namespace EtiquetaFORNew
                 case "CodBarras":
                     return produto.CodBarras ?? "";
                 case "PrecoVenda":
-                    return produto.PrecoVenda > 0 ? produto.PrecoVenda.ToString("C2") : produto.Preco.ToString("C2");
+                    return produto.PrecoVenda > 0 ? produto.PrecoVenda.ToString("F2") : produto.Preco.ToString("F2");
                 case "VendaA":
-                    return produto.VendaA > 0 ? produto.VendaA.ToString("C2") : "-";
+                    return produto.VendaA > 0 ? produto.VendaA.ToString("F2") : "-";
                 case "VendaB":
-                    return produto.VendaB > 0 ? produto.VendaB.ToString("C2") : "-";
+                    return produto.VendaB > 0 ? produto.VendaB.ToString("F2") : "-";
                 case "VendaC":
-                    return produto.VendaC > 0 ? produto.VendaC.ToString("C2") : "-";
+                    return produto.VendaC > 0 ? produto.VendaC.ToString("F2") : "-";
                 case "VendaD":
-                    return produto.VendaD > 0 ? produto.VendaD.ToString("C2") : "-";
+                    return produto.VendaD > 0 ? produto.VendaD.ToString("F2") : "-";
                 case "VendaE":
-                    return produto.VendaE > 0 ? produto.VendaE.ToString("C2") : "-";
+                    return produto.VendaE > 0 ? produto.VendaE.ToString("F2") : "-";
                 case "Fornecedor":
                     return produto.Fornecedor ?? "";
                 case "Fabricante":
@@ -526,9 +526,9 @@ namespace EtiquetaFORNew
 
                 // ⭐ CAMPOS DE PROMOÇÃO
                 case "PrecoOriginal":
-                    return produto.PrecoOriginal.HasValue ? produto.PrecoOriginal.Value.ToString("C2") : "";
+                    return produto.PrecoOriginal.HasValue ? produto.PrecoOriginal.Value.ToString("F2") : "";
                 case "PrecoPromocional":
-                    return produto.PrecoPromocional.HasValue ? produto.PrecoPromocional.Value.ToString("C2") : "";
+                    return produto.PrecoPromocional.HasValue ? produto.PrecoPromocional.Value.ToString("F2") : "";
 
 
 

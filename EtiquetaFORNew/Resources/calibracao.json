@@ -3,47 +3,56 @@
     {
       "nome": "Elgin L42",
       "imagemRecurso": "Elgin L42.jpg",
-      "youtubeUrl": "https://www.youtube.com/watch?v=XnYBmVTI5Fo"
+      "youtubeUrl": "https://www.youtube.com/watch?v=XnYBmVTI5Fo",
+      "ComandoCalibracao": "O\n"
     },
     {
       "nome": "Elgin L42 Pro",
       "imagemRecurso": "Elgin L42 Pro.jpg",
-      "youtubeUrl": "https://www.youtube.com/watch?v=ODNVwDMVSSY"
+      "youtubeUrl": "https://www.youtube.com/watch?v=ODNVwDMVSSY",
+      "ComandoCalibracao": "~JC"
     },
     {
       "nome": "Elgin L42 Pro Full",
       "imagemRecurso": "Elgin L42 Pro Full.jpg",
-      "youtubeUrl": "https://www.youtube.com/watch?v=ODNVwDMVSSY"
+      "youtubeUrl": "https://www.youtube.com/watch?v=ODNVwDMVSSY",
+      "ComandoCalibracao": "~JC"
     },
     {
       "nome": "Elgin L42 DT",
       "imagemRecurso": "Elgin L42 DT.jpg",
-      "youtubeUrl": "https://www.youtube.com/watch?v=G0vY__Kb-GQ"
+      "youtubeUrl": "https://www.youtube.com/watch?v=G0vY__Kb-GQ",
+      "ComandoCalibracao": "~JC"
     },
     {
       "nome": "Argox OS-214 PLUS",
       "imagemRecurso": "Argox OS 214 PLUS.jpg",
-      "youtubeUrl": "https://www.youtube.com/watch?v=7tQbtTVJe6Q"
+      "youtubeUrl": "https://www.youtube.com/watch?v=7tQbtTVJe6Q",
+      "ComandoCalibracao": "\u0002f"
     },
     {
       "nome": "Argox OS-2140",
       "imagemRecurso": "Argox OS 2140.jpg",
-      "youtubeUrl": "https://www.youtube.com/watch?v=7tQbtTVJe6Q"
+      "youtubeUrl": "https://www.youtube.com/watch?v=7tQbtTVJe6Q",
+      "ComandoCalibracao": "\u0002f"
     },
     {
       "nome": "Zebra GC420t",
       "imagemRecurso": "Zebra GC420t.jpg",
-      "youtubeUrl": "https://www.youtube.com/watch?v=j-yFOXH9asU"
+      "youtubeUrl": "https://www.youtube.com/watch?v=j-yFOXH9asU",
+      "ComandoCalibracao": "~JC"
     },
     {
       "nome": "Zebra TLP 2844",
       "imagemRecurso": "Zebra TLP 2844.jpg",
-      "youtubeUrl": "https://www.youtube.com/watch?v=U1ztJhDFJl0"
+      "youtubeUrl": "https://www.youtube.com/watch?v=U1ztJhDFJl0",
+      "ComandoCalibracao": "~JC"
     },
     {
       "nome": "Zebra ZD220 / ZD230",
       "imagemRecurso": "Zebra ZD220 ZD230.jpg",
-      "youtubeUrl": "https://www.youtube.com/watch?v=VGEW_3TYMb0"
+      "youtubeUrl": "https://www.youtube.com/watch?v=VGEW_3TYMb0",
+      "ComandoCalibracao": "~JC"
     }
   ]
 }

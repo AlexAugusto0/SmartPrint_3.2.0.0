@@ -17,6 +17,8 @@ public class CalibracaoInfo
     [JsonProperty("youtubeUrl")]
     public string YoutubeUrl { get; set; }
 
+    public string ComandoCalibracao { get; set; }
+
     /// <summary>
     /// Método para obter a imagem da calibração a partir dos recursos ou arquivos
     /// </summary>
@@ -66,6 +68,7 @@ public class CalibracaoInfo
             return null;
         }
     }
+
 }
 
 public class CalibracaoConfig
@@ -140,4 +143,5 @@ public static class CalibracaoManager
         }
         return null;
     }
+
 }

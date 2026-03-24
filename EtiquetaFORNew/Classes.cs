@@ -1,6 +1,7 @@
-﻿using System;
-using System.Drawing;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace EtiquetaFORNew
 {
@@ -91,6 +92,21 @@ namespace EtiquetaFORNew
                 CaminhoArquivo = this.CaminhoArquivo,
                 Elementos = new List<ElementoEtiqueta>(this.Elementos)
             };
+        }
+        public string SalvarParaXml()
+        {
+            // Usa o Manager que você já criou para transformar o objeto em algo "salvável"
+            var serializavel = TemplateManager.ConverterParaSerializavel(this);
+            // Transforma em texto (snapshot)
+            return JsonConvert.SerializeObject(serializavel);
+        }
+
+        public static TemplateEtiqueta CarregarDeSnapshot(string json)
+        {
+            // Transforma o texto de volta no objeto serializável
+            var serializavel = JsonConvert.DeserializeObject<TemplateSerializavel>(json);
+            // Usa o Manager para reconstruir a classe com Fontes e Imagens reais
+            return TemplateManager.ConverterDeSerializavel(serializavel);
         }
     }
 }

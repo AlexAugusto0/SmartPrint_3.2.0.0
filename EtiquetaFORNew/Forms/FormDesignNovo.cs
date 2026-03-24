@@ -104,6 +104,12 @@ namespace EtiquetaFORNew.Forms
         private const float MM_PARA_PIXEL = 3.78f;
         private float zoom = 1.0f;
 
+        //Pilha que armazena os estados para desfazer do template
+        private Stack<string> historicoUndo = new Stack<string>();
+
+        //Limite para não consumir memória infinita
+        private const int Max_Undo_Steps = 50;
+
         #endregion
 
         #region Construtor e Inicialização
@@ -162,12 +168,14 @@ namespace EtiquetaFORNew.Forms
 
         private void ConfigurarFormulario()
         {
+            SalvarEstadoHistorico();
             this.WindowState = FormWindowState.Maximized;
             this.MinimumSize = new Size(1000, 700);
             this.DoubleBuffered = true;
             this.BackColor = Color.FromArgb(240, 240, 240);
             this.KeyPreview = true;
             this.KeyDown += FormDesignNovo_KeyDown;
+            
         }
 
         #endregion
@@ -1149,6 +1157,7 @@ namespace EtiquetaFORNew.Forms
 
         private void AdicionarElemento(TipoElemento tipo)
         {
+            SalvarEstadoHistorico();
             var elemento = new ElementoEtiqueta
             {
                 Tipo = tipo,
@@ -1174,10 +1183,12 @@ namespace EtiquetaFORNew.Forms
             elementoSelecionado = elemento;
             AtualizarPainelPropriedades();
             pbCanvas.Invalidate();
+            
         }
 
         private void AdicionarCampo(string campo)
         {
+            SalvarEstadoHistorico();
             var elemento = new ElementoEtiqueta
             {
                 Tipo = TipoElemento.Campo,
@@ -1199,10 +1210,12 @@ namespace EtiquetaFORNew.Forms
             elementoSelecionado = elemento;
             AtualizarPainelPropriedades();
             pbCanvas.Invalidate();
+            
         }
 
         private void AdicionarCodigoBarras(string campoCodigo)
         {
+            SalvarEstadoHistorico();
             var elemento = new ElementoEtiqueta
             {
                 Tipo = TipoElemento.CodigoBarras,
@@ -1219,10 +1232,12 @@ namespace EtiquetaFORNew.Forms
             elementoSelecionado = elemento;
             AtualizarPainelPropriedades();
             pbCanvas.Invalidate();
+            
         }
 
         private void AdicionarImagem()
         {
+            SalvarEstadoHistorico();
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
                 ofd.Filter = "Imagens|*.jpg;*.jpeg;*.png;*.bmp;*.gif";
@@ -1241,10 +1256,12 @@ namespace EtiquetaFORNew.Forms
                     pbCanvas.Invalidate();
                 }
             }
+           
         }
 
         private void RemoverElementoSelecionado()
         {
+            SalvarEstadoHistorico();
             if (elementoSelecionado != null)
             {
                 var resultado = MessageBox.Show(
@@ -1270,6 +1287,7 @@ namespace EtiquetaFORNew.Forms
 
         private void AtualizarPainelPropriedades()
         {
+            SalvarEstadoHistorico();
             if (elementoSelecionado == null)
             {
                 panelPropriedades.Visible = false;
@@ -1348,7 +1366,7 @@ namespace EtiquetaFORNew.Forms
             {
                 if (txtConteudo != null) txtConteudo.Visible = false;
                 if (lblConteudo != null) lblConteudo.Visible = false;
-            }
+            }            
         }
 
         private void AtualizarBotoesAlinhamento()
@@ -1370,14 +1388,17 @@ namespace EtiquetaFORNew.Forms
 
         private void AlterarAlinhamento(StringAlignment novoAlinhamento)
         {
+            SalvarEstadoHistorico();
             if (elementoSelecionado == null) return;
             elementoSelecionado.Alinhamento = novoAlinhamento;
             AtualizarBotoesAlinhamento();
             pbCanvas.Invalidate();
+            
         }
 
         private void CmbFonte_SelectedIndexChanged(object sender, EventArgs e)
         {
+            SalvarEstadoHistorico();
             if (elementoSelecionado == null || elementoSelecionado.Fonte == null) return;
             if (cmbFonte.SelectedItem == null) return;
 
@@ -1395,21 +1416,23 @@ namespace EtiquetaFORNew.Forms
             {
                 MessageBox.Show($"Erro ao aplicar fonte: {ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            }            
         }
 
         private void AlterarTamanhoFonte()
         {
+            SalvarEstadoHistorico();
             if (elementoSelecionado == null || elementoSelecionado.Fonte == null) return;
             float novoTamanho = (float)numTamanhoFonte.Value;
             FontStyle estilo = elementoSelecionado.Fonte.Style;
             string nomeFonte = elementoSelecionado.NomeFonte ?? elementoSelecionado.Fonte.FontFamily.Name;
             elementoSelecionado.Fonte = new Font(nomeFonte, novoTamanho, estilo);
-            pbCanvas.Invalidate();
+            pbCanvas.Invalidate();            
         }
 
         private void AlterarEstiloFonte()
         {
+            SalvarEstadoHistorico();
             if (elementoSelecionado == null || elementoSelecionado.Fonte == null) return;
 
             FontStyle estilo = FontStyle.Regular;
@@ -1420,11 +1443,12 @@ namespace EtiquetaFORNew.Forms
             elementoSelecionado.Fonte = new Font(nomeFonte, elementoSelecionado.Fonte.Size, estilo);
             elementoSelecionado.Negrito = chkNegrito.Checked;
             elementoSelecionado.Italico = chkItalico.Checked;
-            pbCanvas.Invalidate();
+            pbCanvas.Invalidate();            
         }
 
         private void BtnCor_Click(object sender, EventArgs e)
         {
+            SalvarEstadoHistorico();
             if (elementoSelecionado == null && elementosSelecionados.Count == 0) return;
             using (ColorDialog colorDialog = new ColorDialog())
             {
@@ -1432,10 +1456,12 @@ namespace EtiquetaFORNew.Forms
                 if (colorDialog.ShowDialog() == DialogResult.OK)
                     AplicarCorTexto(colorDialog.Color);
             }
+            
         }
 
         private void BtnCorFundo_Click(object sender, EventArgs e)
         {
+            SalvarEstadoHistorico();
             if (elementoSelecionado == null && elementosSelecionados.Count == 0) return;
             using (ColorDialog colorDialog = new ColorDialog())
             {
@@ -1443,10 +1469,12 @@ namespace EtiquetaFORNew.Forms
                 if (colorDialog.ShowDialog() == DialogResult.OK)
                     AplicarCorFundo(colorDialog.Color);
             }
+            
         }
 
         private void AplicarCorTexto(Color cor)
         {
+            SalvarEstadoHistorico();
             if (elementosSelecionados.Count > 0)
                 foreach (var elem in elementosSelecionados) elem.Cor = cor;
             else if (elementoSelecionado != null)
@@ -1455,10 +1483,12 @@ namespace EtiquetaFORNew.Forms
             btnCor.BackColor = cor;
             btnCor.ForeColor = cor.GetBrightness() > 0.5 ? Color.Black : Color.White;
             pbCanvas.Invalidate();
+            
         }
 
         private void AplicarCorFundo(Color? cor)
         {
+            SalvarEstadoHistorico();
             if (elementosSelecionados.Count > 0)
                 foreach (var elem in elementosSelecionados) elem.CorFundo = cor;
             else if (elementoSelecionado != null)
@@ -1474,7 +1504,7 @@ namespace EtiquetaFORNew.Forms
                 btnCorFundo.BackColor = Color.Transparent;
                 btnCorFundo.ForeColor = Color.Black;
             }
-            pbCanvas.Invalidate();
+            pbCanvas.Invalidate();            
         }
 
         #endregion
@@ -1636,6 +1666,7 @@ namespace EtiquetaFORNew.Forms
 
         private void PbCanvas_Paint(object sender, PaintEventArgs e)
         {
+            SalvarEstadoHistorico();
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.Clear(Color.White);
@@ -1670,11 +1701,12 @@ namespace EtiquetaFORNew.Forms
             // DESENHAR LINHAS GUIA DE ALINHAMENTO (por último, sobre tudo)
             // =========================================================
             if (arrastando)
-                DesenharLinhasGuia(g, rectEtiqueta);
+                DesenharLinhasGuia(g, rectEtiqueta);            
         }
 
         private void DesenharGrid(Graphics g, RectangleF rect)
         {
+            SalvarEstadoHistorico();
             using (Pen penGrid = new Pen(Color.FromArgb(100, 189, 195, 199), 1))
             {
                 penGrid.DashStyle = DashStyle.Dash;
@@ -1699,6 +1731,7 @@ namespace EtiquetaFORNew.Forms
                     }
                 }
             }
+            
         }
 
         private void DesenharElementos(Graphics g, RectangleF rectEtiqueta)
@@ -1718,6 +1751,7 @@ namespace EtiquetaFORNew.Forms
 
             foreach (var elem in template.Elementos)
             {
+                SalvarEstadoHistorico();
                 DesenharElemento(g, elem, rectEtiqueta, null);
 
                 bool estaSelecionado = (elem == elementoSelecionado) || elementosSelecionados.Contains(elem);
@@ -1754,11 +1788,12 @@ namespace EtiquetaFORNew.Forms
                     if (selectionState != null)
                         g.Restore(selectionState);
                 }
-            }
+            }            
         }
 
         private void DesenharElemento(Graphics g, ElementoEtiqueta elem, RectangleF rectEtiqueta, Produto produto)
         {
+            SalvarEstadoHistorico();
             Rectangle bounds = ConverterParaPixels(elem.Bounds, rectEtiqueta);
             if (elem == elementoSelecionado && arrastando && deltaArrasto != Point.Empty)
             {
@@ -1836,6 +1871,7 @@ namespace EtiquetaFORNew.Forms
 
             if (state != null)
                 g.Restore(state);
+            
         }
 
         #endregion
@@ -1844,12 +1880,14 @@ namespace EtiquetaFORNew.Forms
 
         private Rectangle ConverterParaPixels(Rectangle boundsEmMM, RectangleF rectEtiqueta)
         {
+            SalvarEstadoHistorico();
             return new Rectangle(
                 (int)(rectEtiqueta.X + boundsEmMM.X * MM_PARA_PIXEL * zoom),
                 (int)(rectEtiqueta.Y + boundsEmMM.Y * MM_PARA_PIXEL * zoom),
                 (int)(boundsEmMM.Width * MM_PARA_PIXEL * zoom),
                 (int)(boundsEmMM.Height * MM_PARA_PIXEL * zoom)
             );
+            
         }
 
         private Rectangle ConverterParaMM(Rectangle boundsEmPixels, RectangleF rectEtiqueta)
@@ -1890,17 +1928,18 @@ namespace EtiquetaFORNew.Forms
                 case "PrecoOriginal":
                     return produto.PrecoOriginal.HasValue
                         ? produto.PrecoOriginal.Value.ToString("F2")
-                        : produto.Preco.ToString("C2");
+                        : produto.Preco.ToString("F2");
                 case "PrecoPromocional":
                     return produto.PrecoPromocional.HasValue
                         ? produto.PrecoPromocional.Value.ToString("F2")
-                        : produto.Preco.ToString("C2");
+                        : produto.Preco.ToString("F2");
                 default: return "";
             }
         }
 
         private void DesenharCodigoBarras(Graphics g, string codigo, Rectangle bounds)
         {
+            SalvarEstadoHistorico();
             string codigoLimpo = new string(Array.FindAll(codigo.ToCharArray(), c => char.IsDigit(c)));
             if (string.IsNullOrEmpty(codigoLimpo)) codigoLimpo = "0000000000";
             if (codigoLimpo.Length < 8) codigoLimpo = codigoLimpo.PadLeft(8, '0');
@@ -1917,6 +1956,7 @@ namespace EtiquetaFORNew.Forms
                 using (SolidBrush brush = new SolidBrush(Color.Black))
                     g.FillRectangle(brush, x, bounds.Y, larguraAtual, alturaBarras);
             }
+            
         }
 
         private bool PontoEmRetanguloRotacionado(Point ponto, Rectangle bounds, float rotacao)
@@ -1953,6 +1993,7 @@ namespace EtiquetaFORNew.Forms
 
         private void DesenharHandles(Graphics g, Rectangle bounds)
         {
+            SalvarEstadoHistorico();
             const int handleSize = 6;
             Color handleColor    = Color.FromArgb(0, 120, 215);
             Color rotateHandleColor = Color.Black;
@@ -1993,6 +2034,7 @@ namespace EtiquetaFORNew.Forms
             }
 
             handleBrush.Dispose();
+            
         }
 
         private int ObterHandleClicado(Point mouse, Rectangle bounds, float rotacao = 0)
@@ -2056,6 +2098,7 @@ namespace EtiquetaFORNew.Forms
             }
 
             return -1;
+
         }
 
         #endregion
@@ -2064,8 +2107,9 @@ namespace EtiquetaFORNew.Forms
 
         private void PbCanvas_MouseDown(object sender, MouseEventArgs e)
         {
+            
             if (e.Button != MouseButtons.Left) return;
-
+            SalvarEstadoHistorico();
             RectangleF rectEtiqueta = new RectangleF(25, 25,
                 configuracao.LarguraEtiqueta * MM_PARA_PIXEL * zoom,
                 configuracao.AlturaEtiqueta * MM_PARA_PIXEL * zoom);
@@ -2168,6 +2212,7 @@ namespace EtiquetaFORNew.Forms
 
         private void PbCanvas_MouseMove(object sender, MouseEventArgs e)
         {
+            
             RectangleF rectEtiqueta = new RectangleF(25, 25,
                 configuracao.LarguraEtiqueta * MM_PARA_PIXEL * zoom,
                 configuracao.AlturaEtiqueta * MM_PARA_PIXEL * zoom);
@@ -2233,7 +2278,7 @@ namespace EtiquetaFORNew.Forms
                 // =========================================================
                 // ATUALIZAR LINHAS GUIA A CADA MOVIMENTO
                 // =========================================================
-                AtualizarLinhasGuia(rectEtiqueta);
+                //AtualizarLinhasGuia(rectEtiqueta);
                 // =========================================================
 
                 pbCanvas.Invalidate();
@@ -2297,6 +2342,7 @@ namespace EtiquetaFORNew.Forms
 
         private void PbCanvas_MouseUp(object sender, MouseEventArgs e)
         {
+            
             RectangleF rectEtiqueta = new RectangleF(25, 25,
                 configuracao.LarguraEtiqueta * MM_PARA_PIXEL * zoom,
                 configuracao.AlturaEtiqueta * MM_PARA_PIXEL * zoom);
@@ -2317,6 +2363,7 @@ namespace EtiquetaFORNew.Forms
 
             if (arrastando && deltaArrasto != Point.Empty)
             {
+                SalvarEstadoHistorico();
                 float scale    = MM_PARA_PIXEL * zoom;
                 float thresholdMM = SNAP_THRESHOLD_PX / scale;
 
@@ -2424,6 +2471,7 @@ namespace EtiquetaFORNew.Forms
 
         private void PbCanvas_MouseWheel(object sender, MouseEventArgs e)
         {
+            
             if (ModifierKeys == Keys.Control)
             {
                 zoom += e.Delta > 0 ? 0.1f : -0.1f;
@@ -2431,6 +2479,14 @@ namespace EtiquetaFORNew.Forms
                 AtualizarTamanhoCanvas();
                 pbCanvas.Invalidate();
                 ((HandledMouseEventArgs)e).Handled = true;
+            }
+        }
+        private void FormEtiqueta_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.Z)
+            {
+                Desfazer();
+                e.SuppressKeyPress = true; // Impede o "beep" do Windows
             }
         }
 
@@ -2557,12 +2613,19 @@ namespace EtiquetaFORNew.Forms
 
         private void FormDesignNovo_KeyDown(object sender, KeyEventArgs e)
         {
+            
             List<ElementoEtiqueta> elementosParaMover = new List<ElementoEtiqueta>();
 
             if (elementosSelecionados.Count > 0) elementosParaMover.AddRange(elementosSelecionados);
             else if (elementoSelecionado != null) elementosParaMover.Add(elementoSelecionado);
 
             if (elementosParaMover.Count == 0) return;
+
+            if (e.Control && e.KeyCode == Keys.Z)
+            {
+                Desfazer();
+                e.SuppressKeyPress = true; // Evita o som de "erro" do Windows
+            }
 
             bool houveAlteracao = false;
             int passo = 1;
@@ -2590,6 +2653,7 @@ namespace EtiquetaFORNew.Forms
                 e.Handled = true;
                 e.SuppressKeyPress = true;
             }
+            
         }
 
         #endregion
@@ -2680,6 +2744,62 @@ namespace EtiquetaFORNew.Forms
         private void BtnFechar_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+        private void SalvarEstadoHistorico()
+        {
+            try
+            {
+                // Agora o template.SalvarParaXml() existe e retorna uma string JSON
+                string snapshot = template.SalvarParaXml();
+
+                if (historicoUndo.Count > 0 && historicoUndo.Peek() == snapshot)
+                    return;
+
+                historicoUndo.Push(snapshot);
+
+                if (historicoUndo.Count > Max_Undo_Steps)
+                {
+                    // Lógica para remover o item mais antigo se necessário
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erro ao salvar histórico: " + ex.Message);
+            }
+        }
+
+        private void Desfazer()
+        {
+            // 1. Verificamos se há estados suficientes para voltar
+            // Se só tiver 1, é o estado inicial, não há o que desfazer.
+            if (historicoUndo.Count <= 1) return;
+
+            // 2. Removemos o estado ATUAL da pilha (o que está na tela agora)
+            historicoUndo.Pop();
+
+            // 3. Pegamos o estado ANTERIOR sem removê-lo (usando Peek)
+            // Assim, se apertar Ctrl+Z de novo, o processo se repete
+            string snapshotAnterior = historicoUndo.Peek();
+
+            try
+            {
+                // 4. Restauramos o template com o estado recuperado
+                this.template = TemplateEtiqueta.CarregarDeSnapshot(snapshotAnterior);
+
+                // 5. IMPORTANTE: Limpar seleções
+                // Como o objeto 'template' mudou, as referências antigas de 'elementoSelecionado' 
+                // agora são de um objeto que não existe mais na memória ativa.
+                elementoSelecionado = null;
+                elementosSelecionados.Clear();
+
+                // 6. Atualizar a interface
+                pbCanvas.Invalidate();
+                CarregarDadosNaInterface();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erro ao restaurar snapshot: " + ex.Message);
+            }
         }
 
         #endregion

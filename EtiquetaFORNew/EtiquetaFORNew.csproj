@@ -256,6 +256,7 @@
     <Compile Include="ConfiguracaoManager.cs" />
     <Compile Include="Data\Funcoes.cs" />
     <Compile Include="Data\Promocoesmanager.cs" />
+    <Compile Include="Data\RawPrinterHelper.cs" />
     <Compile Include="Data\SmartPrintRepository.cs" />
     <Compile Include="Data\SoftcomShopDataManager.cs" />
     <Compile Include="FormNomeTemplate.cs">
@@ -372,12 +373,14 @@
     <Compile Include="Properties\VersaoHelper.cs" />
     <EmbeddedResource Include="Forms\calibracao.resx">
       <DependentUpon>calibracao.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ConfigForm.resx">
       <DependentUpon>ConfigForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormDesignNovo.resx">
       <DependentUpon>FormDesignNovo.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormImpressao.resx">
       <DependentUpon>FormImpressao.cs</DependentUpon>

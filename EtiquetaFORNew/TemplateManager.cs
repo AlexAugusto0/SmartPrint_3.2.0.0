@@ -150,7 +150,7 @@ namespace EtiquetaFORNew
         }
 
         // Converter para formato serializável
-        private static TemplateSerializavel ConverterParaSerializavel(TemplateEtiqueta template)
+        public static TemplateSerializavel ConverterParaSerializavel(TemplateEtiqueta template)
         {
             var templateSerializavel = new TemplateSerializavel
             {
@@ -205,7 +205,7 @@ namespace EtiquetaFORNew
         }
 
         // Converter de formato serializável
-        private static TemplateEtiqueta ConverterDeSerializavel(TemplateSerializavel templateSerializavel)
+        public static TemplateEtiqueta ConverterDeSerializavel(TemplateSerializavel templateSerializavel)
         {
             var template = new TemplateEtiqueta
             {

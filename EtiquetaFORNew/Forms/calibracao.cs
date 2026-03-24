@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing.Printing;
 
 namespace EtiquetaFORNew.Forms
 {
@@ -100,6 +101,85 @@ namespace EtiquetaFORNew.Forms
                 MessageBox.Show("Selecione um modelo na lista primeiro.");
             }
 
+        }
+        //private void btnCalibrarAgora_Click(object sender, EventArgs e)
+        //{
+        //    if (comboBox1.SelectedItem is CalibracaoInfo selecionado)
+        //    {
+        //        if (string.IsNullOrEmpty(selecionado.ComandoCalibracao))
+        //        {
+        //            MessageBox.Show("Comando de calibração não configurado para este modelo.");
+        //            return;
+        //        }
+
+        //        // 1. Você precisa capturar qual impressora está instalada no Windows
+        //        // Pode ser via PrintDialog ou uma configuração salva no seu sistema
+        //        //string nomeImpressora = "Elgin L42";
+        //        string nomeImpressora = new PrinterSettings().PrinterName;
+
+        //        try
+        //        {
+        //            // 2. Envia o comando RAW (Bruto)
+        //            // Se você não tiver a RawPrinterHelper, precisará adicioná-la ao projeto
+        //            bool sucesso = RawPrinterHelper.SendStringToPrinter(nomeImpressora, selecionado.ComandoCalibracao);
+
+        //            if (sucesso)
+        //                MessageBox.Show($"Comando {selecionado.ComandoCalibracao} enviado para {selecionado.Nome}!");
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            MessageBox.Show("Erro ao enviar comando: " + ex.Message);
+        //        }
+        //    }
+        //}
+        private void btnCalibrarAgora_Click(object sender, EventArgs e)
+        {
+            if (comboBox1.SelectedItem is CalibracaoInfo selecionado)
+            {
+                if (string.IsNullOrEmpty(selecionado.ComandoCalibracao))
+                {
+                    MessageBox.Show("Comando de calibração não configurado para este modelo.");
+                    return;
+                }
+
+                // Criamos o diálogo de impressão
+                using (PrintDialog pd = new PrintDialog())
+                {
+                    // Opcional: Você pode configurar para abrir já com a impressora padrão selecionada
+                    pd.AllowSelection = false;
+                    pd.AllowSomePages = false;
+
+                    // Abre a janela de seleção para o usuário
+                    if (pd.ShowDialog() == DialogResult.OK)
+                    {
+                        // Pegamos o nome da impressora que o usuário clicou e deu "OK"
+                        string nomeImpressora = pd.PrinterSettings.PrinterName;
+
+                        try
+                        {
+                            // Envia o comando RAW para a impressora escolhida
+                            bool sucesso = RawPrinterHelper.SendStringToPrinter(nomeImpressora, selecionado.ComandoCalibracao);
+
+                            if (sucesso)
+                            {
+                                MessageBox.Show($"Comando enviado com sucesso para: {nomeImpressora}\n" +
+                                                $"Modelo: {selecionado.Nome}", "Sucesso",
+                                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Não foi possível entregar o comando à fila de impressão.",
+                                                "Erro de Comunicação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Erro técnico ao enviar comando: " + ex.Message, "Erro",
+                                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            }
         }
     }
 }
