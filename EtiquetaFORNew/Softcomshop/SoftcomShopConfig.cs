@@ -1,5 +1,6 @@
-using System;
 using Newtonsoft.Json;
+using System;
+using System.IO;
 
 namespace EtiquetaFORNew
 {
@@ -16,6 +17,7 @@ namespace EtiquetaFORNew
         public string DeviceName { get; set; }
         public string DeviceId { get; set; }
         public string DataSync { get; set; }
+        public string CaminhoBancoDados { get; set; }
 
         /// <summary>
         /// Construtor padrão com valores iniciais
@@ -30,6 +32,7 @@ namespace EtiquetaFORNew
             DeviceName = Environment.MachineName;
             DeviceId = GenerateDeviceId();
             DataSync = "";
+            CaminhoBancoDados = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "database", "softcom_shop.db");
         }
 
         /// <summary>

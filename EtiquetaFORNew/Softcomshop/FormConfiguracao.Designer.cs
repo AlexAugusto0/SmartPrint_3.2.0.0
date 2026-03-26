@@ -352,7 +352,7 @@ namespace EtiquetaFORNew
             // btnSalvar
             // 
             this.btnSalvar.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
-            this.btnSalvar.Location = new System.Drawing.Point(497, 556);
+            this.btnSalvar.Location = new System.Drawing.Point(497, 540);
             this.btnSalvar.Name = "btnSalvar";
             this.btnSalvar.Size = new System.Drawing.Size(85, 30);
             this.btnSalvar.TabIndex = 4;
@@ -363,7 +363,7 @@ namespace EtiquetaFORNew
             // btnCancelar
             // 
             this.btnCancelar.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.btnCancelar.Location = new System.Drawing.Point(588, 556);
+            this.btnCancelar.Location = new System.Drawing.Point(588, 540);
             this.btnCancelar.Name = "btnCancelar";
             this.btnCancelar.Size = new System.Drawing.Size(85, 30);
             this.btnCancelar.TabIndex = 5;
@@ -375,7 +375,7 @@ namespace EtiquetaFORNew
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(684, 598);
+            this.ClientSize = new System.Drawing.Size(684, 576);
             this.Controls.Add(this.btnCancelar);
             this.Controls.Add(this.btnSalvar);
             this.Controls.Add(this.panelSoftcomShop);

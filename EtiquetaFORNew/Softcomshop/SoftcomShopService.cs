@@ -226,7 +226,7 @@ namespace EtiquetaFORNew
             }
             catch (Exception ex)
             {
-                throw new Exception($"Erro ao obter promoÃ§Ãµes: {ex.Message}", ex);
+                throw new Exception($"Erro ao obter promoçõess: {ex.Message}", ex);
             }
         }
 
@@ -291,5 +291,7 @@ namespace EtiquetaFORNew
         {
             _httpClient?.Dispose();
         }
+
+
     }
 }

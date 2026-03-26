@@ -15,11 +15,13 @@ namespace EtiquetaFORNew
     {
         private readonly SoftcomShopService _service;
         private readonly string _connectionString;
+        private readonly SoftcomShopService _softcomShopService;
 
         public SoftcomShopDataManager(SoftcomShopConfig config, string sqliteConnectionString)
         {
             _service = new SoftcomShopService(config);
             _connectionString = sqliteConnectionString;
+            _softcomShopService = new SoftcomShopService(config);
         }
 
         #region Sincronização de Produtos
@@ -683,6 +685,155 @@ namespace EtiquetaFORNew
             config.SoftcomShop.DataSync = timestamp;
             config.Salvar();
         }
+        //public async Task SincronizarPromocoesAtivasAsync()
+        //{
+        //    try
+        //    {
+        //        // 1. Chama o método que você postou acima para obter o JSON               
+        //        string jsonResponse = await _softcomShopService.GetPromocoesAsync();
+        //        var response = JObject.Parse(jsonResponse);
+        //        var promocoes = response["data"] as JArray;
+
+        //        if (promocoes == null) return;
+
+        //        using (var conn = new SQLiteConnection(_connectionString))
+        //        {
+        //            await conn.OpenAsync();
+
+        //            using (var transaction = conn.BeginTransaction())
+        //            {
+        //                // 2. RESET: Antes de aplicar as novas, zeramos as promoções antigas no SQLite
+        //                // Isso garante que se uma promoção acabou no Web, ela saia da etiqueta local.
+        //                using (var cmdReset = new SQLiteCommand("UPDATE Mercadorias SET PrecoPromocional = 0, EmPromocao = 0", conn))
+        //                {
+        //                    await cmdReset.ExecuteNonQueryAsync();
+        //                }
+
+        //                // 3. PROCESSAMENTO: Percorre as promoções vindas do Web
+        //                foreach (var promo in promocoes)
+        //                {
+        //                    var itens = promo["itens"] as JArray;
+        //                    if (itens == null) continue;
+
+        //                    foreach (var item in itens)
+        //                    {
+        //                        // No JSON do SoftcomShop, o vínculo costuma ser pelo CodigoMercadoria (SKU/EAN)
+        //                        string sku = item["CodigoMercadoria"]?.ToString() ?? "";
+        //                        decimal precoPromocional = item["Preco"]?.ToObject<decimal>() ?? 0;
+
+        //                        if (string.IsNullOrEmpty(sku)) continue;
+
+        //                        // 4. ATUALIZAÇÃO: Grava o preço de oferta na mercadoria correspondente
+        //                        // Usamos o CodBarras ou CodBarras_Grade para garantir que atinja o item certo
+        //                        string sqlUpdate = @"
+        //                    UPDATE Mercadorias 
+        //                    SET PrecoPromocional = @preco,
+        //                        EmPromocao = 1
+        //                    WHERE CodBarras = @sku OR CodBarras_Grade = @sku";
+
+        //                        using (var cmdUpd = new SQLiteCommand(sqlUpdate, conn))
+        //                        {
+        //                            cmdUpd.Parameters.AddWithValue("@preco", precoPromocional);
+        //                            cmdUpd.Parameters.AddWithValue("@sku", sku);
+        //                            await cmdUpd.ExecuteNonQueryAsync();
+        //                        }
+        //                    }
+        //                }
+        //                transaction.Commit();
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Erro ao integrar promoções: {ex.Message}");
+        //    }
+        //}
+
+        public async Task SincronizarPromocoesAtivasAsync()
+        {
+            try
+            {
+                // 1. Obtém os dados da API
+                string jsonResponse = await _service.GetPromocoesAsync();
+                if (string.IsNullOrEmpty(jsonResponse)) return;
+
+                var response = JToken.Parse(jsonResponse);
+                // Garante a leitura independente da versão da API (v1 ou v2)
+                var listaPromocoes = response["data"] ?? response["produtos"] ?? response;
+
+                using (var conn = new System.Data.SQLite.SQLiteConnection(_connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (var transaction = conn.BeginTransaction())
+                    {
+                        // 2. Limpa estados promocionais anteriores (Garante integridade)
+                        using (var cmdReset = new System.Data.SQLite.SQLiteCommand(
+                            "UPDATE Mercadorias SET EmPromocao = 0, PrecoPromocional = 0, Origem = NULL", conn))
+                        {
+                            await cmdReset.ExecuteNonQueryAsync();
+                        }
+
+                        foreach (var item in listaPromocoes)
+                        {
+                            var subItens = item["itens"] as JArray ?? (item.HasValues ? new JArray(item) : null);
+                            if (subItens == null) continue;
+
+                            foreach (var promo in subItens)
+                            {
+                                // 3. Identificação do Produto (Vínculo com a Nuvem)
+                                // 'produto_id' na API é o ID_SoftcomShop no seu banco
+                                string idApi = (promo["produto_id"] ?? promo["id"])?.ToString()?.Trim() ?? "";
+
+                                // 4. Tratamento do Preço
+                                string precoBruto = (promo["preco_promocional"] ?? promo["valor"])?.ToString() ?? "0";
+                                decimal preco = 0;
+                                decimal.TryParse(precoBruto.Replace(",", "."), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out preco);
+
+                                if (string.IsNullOrEmpty(idApi) || preco <= 0) continue;
+
+                                // 5. Datas de Vigência (Essencial para a consulta Promocoes_Ativas_filtroData)
+                                string dIni = promo["data_inicio"]?.ToString() ?? DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd");
+                                string dFim = promo["data_fim"]?.ToString() ?? DateTime.Now.AddYears(1).ToString("yyyy-MM-dd");
+
+                                // 6. SQL CORRIGIDO (Equivalência ID_SoftcomShop)
+                                // O segredo está em comparar o idApi com ID_SoftcomShop, não com CódigoMercadoria
+                                string sql = @"UPDATE Mercadorias 
+                                     SET EmPromocao = 1, 
+                                         PrecoPromocional = @p,
+                                         Origem = 'PROMOCAO',
+                                         PromocaoDataInicio = @dIni,
+                                         PromocaoDataFim = @dFim
+                                     WHERE TRIM(CAST(ID_SoftcomShop AS TEXT)) = @id 
+                                        OR TRIM(CAST(CodBarras AS TEXT)) = @id";
+
+                                using (var cmd = new System.Data.SQLite.SQLiteCommand(sql, conn))
+                                {
+                                    cmd.Parameters.AddWithValue("@p", preco);
+                                    cmd.Parameters.AddWithValue("@dIni", dIni);
+                                    cmd.Parameters.AddWithValue("@dFim", dFim);
+                                    cmd.Parameters.AddWithValue("@id", idApi);
+
+                                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                                    // LOG DE DIAGNÓSTICO
+                                    if (rowsAffected > 0)
+                                        System.Diagnostics.Debug.WriteLine($"✅ ID {idApi} atualizado com sucesso.");
+                                    else
+                                        System.Diagnostics.Debug.WriteLine($"⚠️ ID {idApi} da API não encontrado no campo ID_SoftcomShop do SQLite.");
+                                }
+                            }
+                        }
+                        // 7. Confirmação final da gravação no arquivo físico
+                        transaction.Commit();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Falha na sincronização de promoções: " + ex.Message);
+            }
+        }
+
 
         #endregion
     }

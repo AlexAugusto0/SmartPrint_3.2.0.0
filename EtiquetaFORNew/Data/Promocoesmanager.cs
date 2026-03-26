@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 
 namespace EtiquetaFORNew.Data
 {
@@ -17,6 +18,14 @@ namespace EtiquetaFORNew.Data
         /// </summary>
         public static DataTable BuscarPromocoesAtivas()
         {
+            var config = ConfiguracaoSistema.Carregar();
+
+            if (config.TipoConexaoAtiva == TipoConexao.SoftcomShop)
+            {
+                // Força o uso do banco local de cache
+                string dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LocalData.db");
+                return BuscarPromocoesAtivasSQLite(dbPath);
+            }
             try
             {
                 string connectionString = DatabaseConfig.GetConnectionString();
@@ -80,12 +89,22 @@ namespace EtiquetaFORNew.Data
             string grupo = null,
             string subGrupo = null,
             string fabricante = null,
-            string fornecedor = null)
+            string fornecedor = null,
+            bool isConfeccao = false)
         {
             try
             {
+                // 1. CARREGA A CONFIGURAÇÃO PARA DECIDIR O CAMINHO
+                var config = ConfiguracaoSistema.Carregar();
+
+                // 2. DESVIO PARA SOFTCOM SHOP (WEB)
+                if (config.TipoConexaoAtiva == TipoConexao.SoftcomShop)
+                {
+                    return LocalDatabaseManager.BuscarMercadoriasPorFiltros("EmPromocao = 1");
+                }
+
                 string connectionString = DatabaseConfig.GetConnectionString();
-                DatabaseConfig.ConfigData config = DatabaseConfig.LoadConfiguration();
+                DatabaseConfig.ConfigData configSQL = DatabaseConfig.LoadConfiguration();
 
                 if (string.IsNullOrEmpty(connectionString))
                 {
@@ -95,7 +114,7 @@ namespace EtiquetaFORNew.Data
                 // Se loja não foi informada, usa a loja configurada
                 if (string.IsNullOrEmpty(loja))
                 {
-                    loja = config.Loja;
+                    loja = configSQL.Loja;
                 }
 
                 using (var conn = new SqlConnection(connectionString))
@@ -207,6 +226,29 @@ namespace EtiquetaFORNew.Data
             {
                 throw new Exception($"Erro ao buscar produtos da promoção: {ex.Message}", ex);
             }
+        }
+
+        private static DataTable BuscarPromocoesAtivasSQLite(string caminhoBanco)
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add("ID_Promocao", typeof(int));
+            dt.Columns.Add("Descricao", typeof(string));
+
+            using (var conn = new System.Data.SQLite.SQLiteConnection($"Data Source={caminhoBanco};Version=3;"))
+            {
+                conn.Open();
+                // Se houver qualquer item com EmPromocao = 1, habilitamos a opção no Combo
+                string sql = "SELECT COUNT(*) FROM Mercadorias WHERE EmPromocao = 1 AND PrecoPromocional > 0";
+                using (var cmd = new System.Data.SQLite.SQLiteCommand(sql, conn))
+                {
+                    var result = cmd.ExecuteScalar();
+                    if (result != DBNull.Value && Convert.ToInt32(result) > 0)
+                    {
+                        dt.Rows.Add(999, "PROMOÇÕES SOFTCOM SHOP (WEB)");
+                    }
+                }
+            }
+            return dt;
         }
     }
 }

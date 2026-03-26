@@ -37,6 +37,7 @@ namespace EtiquetaFORNew
 
             // Obter connection string do SQLite
             _connectionString = LocalDatabaseManager.GetConnectionString();
+            //_connectionString = $"Data Source={_config.SoftcomShop.CaminhoBancoDados};Version=3;";
 
             // Criar gerenciador de dados
             _dataManager = new SoftcomShopDataManager(_config.SoftcomShop, _connectionString);

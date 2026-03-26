@@ -64,6 +64,7 @@ namespace EtiquetaFORNew
             ConfigurarFormulario();
             CarregarDados();
             AplicarPermissoesFiltros();
+
         }
 
         private void InitializeComponent()
@@ -462,7 +463,7 @@ namespace EtiquetaFORNew
                     break;
 
                 case "PROMOÇÕES":
-                    // â­ Mostrar combo de promoÃ§Ãµes e carregar promoÃ§Ãµes ativas
+                    // à­ Mostrar combo de promoçções e carregar promoçõess ativas
                     lblPromocao.Visible = true;
                     cmbPromocao.Visible = true;
                     CarregarPromocoesAtivas();
@@ -474,41 +475,70 @@ namespace EtiquetaFORNew
         }
 
         /// <summary>
-        /// â­ NOVO: Carrega promoÃ§Ãµes ativas no ComboBox
+        /// â­ NOVO: Carrega promoçõess ativas no ComboBox
         /// </summary>
-        private void CarregarPromocoesAtivas()
+        //private void CarregarPromocoesAtivas()
+        //{
+        //    try
+        //    {
+        //        Cursor = Cursors.WaitCursor;
+
+        //        DataTable promocoes = PromocoesManager.BuscarPromocoesAtivas();
+
+        //        cmbPromocao.DataSource = null;
+        //        cmbPromocao.Items.Clear();
+
+        //        if (promocoes != null && promocoes.Rows.Count > 0)
+        //        {
+        //            cmbPromocao.DisplayMember = "Descricao";
+        //            cmbPromocao.ValueMember = "ID_Promocao";
+        //            cmbPromocao.DataSource = promocoes;
+        //        }
+        //        else
+        //        {
+        //            MessageBox.Show(
+        //                "Não há¡ promoções ativas no momento.",
+        //                "SmartPrint - Aviso",
+        //                MessageBoxButtons.OK,
+        //                MessageBoxIcon.Information);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show(
+        //            $"Erro ao carregar promoções:\n{ex.Message}",
+        //            "SmartPrint - Erro",
+        //            MessageBoxButtons.OK,
+        //            MessageBoxIcon.Error);
+        //    }
+        //    finally
+        //    {
+        //        Cursor = Cursors.Default;
+        //    }
+        //}
+
+        private async void CarregarPromocoesAtivas()
         {
             try
             {
                 Cursor = Cursors.WaitCursor;
 
+                // Força a atualização do SQLite antes de preencher o combo
+                await LocalDatabaseManager.SincronizarPromocoesDeAcordoComOrigem();
+
                 DataTable promocoes = PromocoesManager.BuscarPromocoesAtivas();
 
                 cmbPromocao.DataSource = null;
-                cmbPromocao.Items.Clear();
-
                 if (promocoes != null && promocoes.Rows.Count > 0)
                 {
                     cmbPromocao.DisplayMember = "Descricao";
                     cmbPromocao.ValueMember = "ID_Promocao";
                     cmbPromocao.DataSource = promocoes;
                 }
-                else
-                {
-                    MessageBox.Show(
-                        "Não há¡ promoções ativas no momento.",
-                        "SmartPrint - Aviso",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"Erro ao carregar promoções:\n{ex.Message}",
-                    "SmartPrint - Erro",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                MessageBox.Show($"Erro: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -560,7 +590,7 @@ namespace EtiquetaFORNew
                 case "PREÇOS ALTERADOS":
                     if (!chkUsarFiltroData.Checked)
                     {
-                        MessageBox.Show("O filtro de data Ã© obrigatÃ³rio para PREÇOS ALTERADOS!",
+                        MessageBox.Show("O filtro de data é obrigatório para PREÇOS ALTERADOS!",
                             "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }

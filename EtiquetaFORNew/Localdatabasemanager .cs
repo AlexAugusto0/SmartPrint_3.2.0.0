@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Data;
-using System.Data.SQLite;
-using System.Data.SqlClient;
-using System.IO;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Data.SQLite;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace EtiquetaFORNew.Data
 {
@@ -31,6 +32,106 @@ namespace EtiquetaFORNew.Data
         /// <summary>
         /// ⭐ ATUALIZADO: Inicializa o banco local com campos adicionais para SoftcomShop
         /// </summary>
+        //public static void InicializarBanco()
+        //{
+        //    try
+        //    {
+        //        // Criar arquivo do banco se não existir
+        //        if (!File.Exists(DbPath))
+        //        {
+        //            SQLiteConnection.CreateFile(DbPath);
+        //        }
+
+        //        using (var conn = new SQLiteConnection(ConnectionString))
+        //        {
+        //            conn.Open();
+
+        //            // ⭐ TABELA PRINCIPAL: Mercadorias
+        //            // Campos originais + campos do SoftcomShop
+        //            string createTable = @"
+        //                CREATE TABLE IF NOT EXISTS Mercadorias (
+        //                    -- Campos originais
+        //                    CodigoMercadoria INTEGER,
+        //                    CodFabricante TEXT,
+        //                    CodBarras TEXT,
+        //                    Mercadoria TEXT NOT NULL,
+        //                    PrecoVenda REAL,
+        //                    VendaA REAL,
+        //                    VendaB REAL,
+        //                    VendaC REAL,
+        //                    VendaD REAL,
+        //                    VendaE REAL,
+        //                    Fornecedor TEXT,
+        //                    Fabricante TEXT,
+        //                    Grupo TEXT,
+        //                    Prateleira TEXT,
+        //                    Garantia TEXT,
+        //                    Tam TEXT,
+        //                    Cores TEXT,
+        //                    CodBarras_Grade TEXT,
+        //                    Registro INTEGER,
+        //                    UltimaAtualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+        //                    -- ⭐ NOVOS: Campos específicos do SoftcomShop
+        //                    ID_SoftcomShop INTEGER DEFAULT 0,
+        //                    Origem TEXT DEFAULT 'SQL',
+        //                    Referencia TEXT,
+        //                    Marca TEXT,
+        //                    Ativo INTEGER DEFAULT 1,
+        //                    GerarEtiqueta INTEGER DEFAULT 0,
+        //                    QuantidadeEtiqueta INTEGER DEFAULT 1
+        //                );
+
+        //                CREATE INDEX IF NOT EXISTS idx_codfabricante ON Mercadorias(CodFabricante);
+        //                CREATE INDEX IF NOT EXISTS idx_mercadoria ON Mercadorias(Mercadoria);
+        //                CREATE INDEX IF NOT EXISTS idx_codbarras ON Mercadorias(CodBarras);
+        //                CREATE INDEX IF NOT EXISTS idx_fornecedor ON Mercadorias(Fornecedor);
+        //                CREATE INDEX IF NOT EXISTS idx_fabricante ON Mercadorias(Fabricante);
+        //                CREATE INDEX IF NOT EXISTS idx_grupo ON Mercadorias(Grupo);
+        //                CREATE INDEX IF NOT EXISTS idx_id_softcomshop ON Mercadorias(ID_SoftcomShop);
+        //                CREATE INDEX IF NOT EXISTS idx_origem ON Mercadorias(Origem);
+
+        //                CREATE TABLE IF NOT EXISTS ProdutosSelecionados (
+        //                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+        //                    CodigoMercadoria INTEGER,
+        //                    Nome TEXT NOT NULL,
+        //                    Codigo TEXT NOT NULL,
+        //                    Preco REAL NOT NULL,
+        //                    Quantidade INTEGER NOT NULL,
+        //                    DataSelecao DATETIME DEFAULT CURRENT_TIMESTAMP,
+        //                    FOREIGN KEY (CodigoMercadoria) REFERENCES Mercadorias(CodigoMercadoria)
+        //                );
+
+        //                CREATE TABLE IF NOT EXISTS ConfiguracaoSync (
+        //                    Id INTEGER PRIMARY KEY,
+        //                    UltimaSincronizacao DATETIME,
+        //                    TotalRegistros INTEGER,
+        //                    TipoOrigem TEXT DEFAULT 'SQL'
+        //                );
+        //            ";
+
+        //            using (var cmd = new SQLiteCommand(createTable, conn))
+        //            {
+        //                cmd.ExecuteNonQuery();
+        //            }
+
+        //            // ⭐ VERIFICAR E ADICIONAR CAMPOS NOVOS SE NÃO EXISTIREM
+        //            AdicionarCampoSeNaoExistir(conn, "Mercadorias", "ID_SoftcomShop", "INTEGER DEFAULT 0");
+        //            AdicionarCampoSeNaoExistir(conn, "Mercadorias", "Origem", "TEXT DEFAULT 'SQL'");
+        //            AdicionarCampoSeNaoExistir(conn, "Mercadorias", "Referencia", "TEXT");
+        //            AdicionarCampoSeNaoExistir(conn, "Mercadorias", "Marca", "TEXT");
+        //            AdicionarCampoSeNaoExistir(conn, "Mercadorias", "Ativo", "INTEGER DEFAULT 1");
+        //            AdicionarCampoSeNaoExistir(conn, "Mercadorias", "GerarEtiqueta", "INTEGER DEFAULT 0");
+        //            AdicionarCampoSeNaoExistir(conn, "Mercadorias", "QuantidadeEtiqueta", "INTEGER DEFAULT 1");
+        //            AdicionarCampoSeNaoExistir(conn, "ConfiguracaoSync", "TipoOrigem", "TEXT DEFAULT 'SQL'");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Erro ao inicializar banco local: {ex.Message}", ex);
+        //    }
+        //}
+
         public static void InicializarBanco()
         {
             try
@@ -45,76 +146,74 @@ namespace EtiquetaFORNew.Data
                 {
                     conn.Open();
 
-                    // ⭐ TABELA PRINCIPAL: Mercadorias
-                    // Campos originais + campos do SoftcomShop
+                    // 1. Criação das Tabelas Base
                     string createTable = @"
-                        CREATE TABLE IF NOT EXISTS Mercadorias (
-                            -- Campos originais
-                            CodigoMercadoria INTEGER,
-                            CodFabricante TEXT,
-                            CodBarras TEXT,
-                            Mercadoria TEXT NOT NULL,
-                            PrecoVenda REAL,
-                            VendaA REAL,
-                            VendaB REAL,
-                            VendaC REAL,
-                            VendaD REAL,
-                            VendaE REAL,
-                            Fornecedor TEXT,
-                            Fabricante TEXT,
-                            Grupo TEXT,
-                            Prateleira TEXT,
-                            Garantia TEXT,
-                            Tam TEXT,
-                            Cores TEXT,
-                            CodBarras_Grade TEXT,
-                            Registro INTEGER,
-                            UltimaAtualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
-                            
-                            -- ⭐ NOVOS: Campos específicos do SoftcomShop
-                            ID_SoftcomShop INTEGER DEFAULT 0,
-                            Origem TEXT DEFAULT 'SQL',
-                            Referencia TEXT,
-                            Marca TEXT,
-                            Ativo INTEGER DEFAULT 1,
-                            GerarEtiqueta INTEGER DEFAULT 0,
-                            QuantidadeEtiqueta INTEGER DEFAULT 1
-                        );
+                CREATE TABLE IF NOT EXISTS Mercadorias (
+                    CodigoMercadoria INTEGER,
+                    CodFabricante TEXT,
+                    CodBarras TEXT,
+                    Mercadoria TEXT NOT NULL,
+                    PrecoVenda REAL,
+                    VendaA REAL,
+                    VendaB REAL,
+                    VendaC REAL,
+                    VendaD REAL,
+                    VendaE REAL,
+                    Fornecedor TEXT,
+                    Fabricante TEXT,
+                    Grupo TEXT,
+                    Prateleira TEXT,
+                    Garantia TEXT,
+                    Tam TEXT,
+                    Cores TEXT,
+                    CodBarras_Grade TEXT,
+                    Registro INTEGER,
+                    UltimaAtualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    
+                    -- Campos SoftcomShop
+                    ID_SoftcomShop INTEGER DEFAULT 0,
+                    Origem TEXT DEFAULT 'SQL',
+                    Referencia TEXT,
+                    Marca TEXT,
+                    Ativo INTEGER DEFAULT 1,
+                    GerarEtiqueta INTEGER DEFAULT 0,
+                    QuantidadeEtiqueta INTEGER DEFAULT 1,
+                    
+                    -- CAMPOS DE PROMOÇÃO (Garantia de criação na estrutura inicial)
+                    EmPromocao INTEGER DEFAULT 0,
+                    PrecoPromocional REAL DEFAULT 0
+                );
 
-                        CREATE INDEX IF NOT EXISTS idx_codfabricante ON Mercadorias(CodFabricante);
-                        CREATE INDEX IF NOT EXISTS idx_mercadoria ON Mercadorias(Mercadoria);
-                        CREATE INDEX IF NOT EXISTS idx_codbarras ON Mercadorias(CodBarras);
-                        CREATE INDEX IF NOT EXISTS idx_fornecedor ON Mercadorias(Fornecedor);
-                        CREATE INDEX IF NOT EXISTS idx_fabricante ON Mercadorias(Fabricante);
-                        CREATE INDEX IF NOT EXISTS idx_grupo ON Mercadorias(Grupo);
-                        CREATE INDEX IF NOT EXISTS idx_id_softcomshop ON Mercadorias(ID_SoftcomShop);
-                        CREATE INDEX IF NOT EXISTS idx_origem ON Mercadorias(Origem);
+                CREATE INDEX IF NOT EXISTS idx_codbarras ON Mercadorias(CodBarras);
+                CREATE INDEX IF NOT EXISTS idx_mercadoria ON Mercadorias(Mercadoria);
 
-                        CREATE TABLE IF NOT EXISTS ProdutosSelecionados (
-                            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            CodigoMercadoria INTEGER,
-                            Nome TEXT NOT NULL,
-                            Codigo TEXT NOT NULL,
-                            Preco REAL NOT NULL,
-                            Quantidade INTEGER NOT NULL,
-                            DataSelecao DATETIME DEFAULT CURRENT_TIMESTAMP,
-                            FOREIGN KEY (CodigoMercadoria) REFERENCES Mercadorias(CodigoMercadoria)
-                        );
+                CREATE TABLE IF NOT EXISTS ProdutosSelecionados (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    CodigoMercadoria INTEGER,
+                    Nome TEXT NOT NULL,
+                    Codigo TEXT NOT NULL,
+                    Preco REAL NOT NULL,
+                    Quantidade INTEGER NOT NULL,
+                    DataSelecao DATETIME DEFAULT CURRENT_TIMESTAMP
+                );
 
-                        CREATE TABLE IF NOT EXISTS ConfiguracaoSync (
-                            Id INTEGER PRIMARY KEY,
-                            UltimaSincronizacao DATETIME,
-                            TotalRegistros INTEGER,
-                            TipoOrigem TEXT DEFAULT 'SQL'
-                        );
-                    ";
+                CREATE TABLE IF NOT EXISTS ConfiguracaoSync (
+                    Id INTEGER PRIMARY KEY,
+                    UltimaSincronizacao DATETIME,
+                    TotalRegistros INTEGER,
+                    TipoOrigem TEXT DEFAULT 'SQL'
+                );
+            ";
 
                     using (var cmd = new SQLiteCommand(createTable, conn))
                     {
                         cmd.ExecuteNonQuery();
                     }
 
-                    // ⭐ VERIFICAR E ADICIONAR CAMPOS NOVOS SE NÃO EXISTIREM
+                    // 2. ⭐ GARANTIA DE CAMPOS (Para bancos já existentes)
+                    // Se o usuário já tem o LocalData.db, o 'CREATE TABLE IF NOT EXISTS' não adiciona colunas novas.
+                    // Por isso, forçamos a verificação individual de cada campo essencial para o Web.
+
                     AdicionarCampoSeNaoExistir(conn, "Mercadorias", "ID_SoftcomShop", "INTEGER DEFAULT 0");
                     AdicionarCampoSeNaoExistir(conn, "Mercadorias", "Origem", "TEXT DEFAULT 'SQL'");
                     AdicionarCampoSeNaoExistir(conn, "Mercadorias", "Referencia", "TEXT");
@@ -122,6 +221,11 @@ namespace EtiquetaFORNew.Data
                     AdicionarCampoSeNaoExistir(conn, "Mercadorias", "Ativo", "INTEGER DEFAULT 1");
                     AdicionarCampoSeNaoExistir(conn, "Mercadorias", "GerarEtiqueta", "INTEGER DEFAULT 0");
                     AdicionarCampoSeNaoExistir(conn, "Mercadorias", "QuantidadeEtiqueta", "INTEGER DEFAULT 1");
+
+                    // ⭐ AJUSTE SOLICITADO: Colunas para as promoções Web aparecerem
+                    AdicionarCampoSeNaoExistir(conn, "Mercadorias", "EmPromocao", "INTEGER DEFAULT 0");
+                    AdicionarCampoSeNaoExistir(conn, "Mercadorias", "PrecoPromocional", "REAL DEFAULT 0");
+
                     AdicionarCampoSeNaoExistir(conn, "ConfiguracaoSync", "TipoOrigem", "TEXT DEFAULT 'SQL'");
                 }
             }
@@ -1070,5 +1174,16 @@ namespace EtiquetaFORNew.Data
                 return ObterValoresDistintos("Fabricante");
             }
         }
+        public static async Task SincronizarPromocoesDeAcordoComOrigem()
+        {
+            var config = ConfiguracaoSistema.Carregar();
+            if (config.TipoConexaoAtiva == TipoConexao.SoftcomShop)
+            {
+                // USA O GETCONNECTIONSTRING DO PRÓPRIO LOCALDATABASEMANAGER
+                var dsManager = new SoftcomShopDataManager(config.SoftcomShop, GetConnectionString());
+                await dsManager.SincronizarPromocoesAtivasAsync();
+            }
+        }
+
     }
 }

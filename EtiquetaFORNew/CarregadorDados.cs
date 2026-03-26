@@ -43,32 +43,54 @@ namespace EtiquetaFORNew.Data
                 case "AJUSTES":
                     return CarregarAjustes(documento, dataInicial, dataFinal);
 
-                case "BALANÃ‡OS":
+                case "BALANÇOS":
                     return CarregarBalancos(documento, dataInicial, dataFinal);
 
                 case "NOTAS ENTRADA":
                     return CarregarNotasEntrada(documento, dataInicial, dataFinal);
 
-                case "PREÃ‡OS ALTERADOS":
+                case "PREÇOS ALTERADOS":
                     return CarregarPrecosAlterados(dataInicial.Value, dataFinal.Value);
 
-                case "PROMOÃ‡Ã•ES":
-                    // ÃƒÂ¢Ã‚Â­Ã‚Â Usa o mÃƒÆ’Ã‚Â©todo do PromocoesManager com ID da promoÃ§ÃƒÆ’Ã‚Â£o
-                    if (idPromocao.HasValue)
+                //case "PROMOÇÕES":
+                //    // ÃƒÂ¢Ã‚Â­Ã‚Â Usa o mÃƒÆ’Ã‚Â©todo do PromocoesManager com ID da promoÃ§ÃƒÆ’Ã‚Â£o
+                //    if (idPromocao.HasValue)
+                //    {
+                //        return PromocoesManager.BuscarProdutosDaPromocao(
+                //            idPromocao.Value,
+                //            null, // loja (usa padrÃƒÆ’Ã‚Â£o)
+                //            produto,
+                //            grupo,
+                //            subGrupo,
+                //            fabricante,
+                //            fornecedor);
+                //    }
+                //    else
+                //    {
+                //        throw new Exception("ID da promoÃ§ÃƒÆ’Ã‚Â£o nÃƒÆ’Ã‚Â£o foi informado!");
+                //    }
+                case "PROMOÇÕES":
+                    // 1. Prioridade para busca Local/Web (SQLite) se não houver um ID de promoção específico
+                    // Ou se a lógica de negócio exigir que o "EmPromocao" do banco local seja verificado
+                    if (!idPromocao.HasValue)
                     {
-                        return PromocoesManager.BuscarProdutosDaPromocao(
-                            idPromocao.Value,
-                            null, // loja (usa padrÃƒÆ’Ã‚Â£o)
-                            produto,
-                            grupo,
-                            subGrupo,
-                            fabricante,
-                            fornecedor);
+                        // Chama o método que criamos para o SQLite (Web)
+                        // Passando os filtros e o isConfeccao que você precisa
+                        return CarregarPromocoesSoftcomShopLocal(grupo, fabricante, produto);
                     }
-                    else
-                    {
-                        throw new Exception("ID da promoÃ§ÃƒÆ’Ã‚Â£o nÃƒÆ’Ã‚Â£o foi informado!");
-                    }
+
+                    // 2. Se houver ID, segue para o SQL Server via PromocoesManager
+                    // Adicionamos o isConfeccao no final da assinatura para não quebrar a lógica
+                    return PromocoesManager.BuscarProdutosDaPromocao(
+                        idPromocao.Value,
+                        null, // loja (usa padrão)
+                        produto,
+                        grupo,
+                        subGrupo,
+                        fabricante,
+                        fornecedor,
+                        isConfeccao // <--- O parâmetro que você precisava incluir
+                    );
 
                 case "FILTROS MANUAIS":
                 default:
@@ -683,6 +705,45 @@ namespace EtiquetaFORNew.Data
             {
                 return DBNull.Value;
             }
+        }
+        private static DataTable CarregarPromocoesSoftcomShopLocal(string grupo, string fabricante, string produto)
+        {
+            DataTable dt = CriarTabelaResultadoPadrao();
+            try
+            {
+                using (var conn = new SQLiteConnection(ConnectionString))
+                {
+                    conn.Open();
+                    string sql = "SELECT * FROM Mercadorias WHERE EmPromocao = 1";
+                    if (!string.IsNullOrEmpty(grupo)) sql += " AND Grupo = @g";
+                    if (!string.IsNullOrEmpty(fabricante)) sql += " AND Fabricante = @f";
+                    if (!string.IsNullOrEmpty(produto)) sql += " AND Mercadoria LIKE @p";
+
+                    using (var cmd = new SQLiteCommand(sql, conn))
+                    {
+                        if (!string.IsNullOrEmpty(grupo)) cmd.Parameters.AddWithValue("@g", grupo);
+                        if (!string.IsNullOrEmpty(fabricante)) cmd.Parameters.AddWithValue("@f", fabricante);
+                        if (!string.IsNullOrEmpty(produto)) cmd.Parameters.AddWithValue("@p", $"%{produto}%");
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                AdicionarRowCompleto(dt, reader, 1);
+
+                                // Ajuste do preço promocional
+                                if (reader["PrecoPromocional"] != DBNull.Value)
+                                {
+                                    decimal pPromo = Convert.ToDecimal(reader["PrecoPromocional"]);
+                                    if (pPromo > 0) dt.Rows[dt.Rows.Count - 1]["PrecoVenda"] = pPromo;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+            return dt;
         }
 
     }
