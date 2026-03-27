@@ -573,7 +573,99 @@ namespace EtiquetaFORNew.Data
         /// Busca mercadorias por múltiplos filtros
         /// MANTIDO: Funcionalidade original preservada
         /// </summary>
-        public static DataTable BuscarMercadoriasPorFiltros(string grupo = null, string fabricante = null, string fornecedor = null, bool isConfeccao = false)
+        //public static DataTable BuscarMercadoriasPorFiltros(string grupo = null, string fabricante = null, string fornecedor = null, bool isConfeccao = false)
+        //{
+        //    try
+        //    {
+        //        using (var conn = new SQLiteConnection(ConnectionString))
+        //        {
+        //            conn.Open();
+
+        //            string query = @"
+        //        SELECT 
+        //            CodigoMercadoria,
+        //            CodFabricante,
+        //            CodBarras,
+        //            Mercadoria,
+        //            PrecoVenda,
+        //            VendaA,
+        //            VendaB,
+        //            VendaC,
+        //            VendaD,         
+        //            VendaE,
+        //            Fornecedor,
+        //            Fabricante,
+        //            Grupo,
+        //            Prateleira,
+        //            Garantia,
+        //            Tam,
+        //            Cores,
+        //            CodBarras_Grade,
+        //            Registro
+        //        FROM Mercadorias
+        //        WHERE 1=1
+        //    ";
+
+        //            List<string> condicoes = new List<string>();
+
+        //            if (!string.IsNullOrEmpty(grupo))
+        //                condicoes.Add("Grupo = @grupo");
+
+        //            if (!string.IsNullOrEmpty(fabricante))
+        //                condicoes.Add("Fabricante = @fabricante");
+
+        //            if (!string.IsNullOrEmpty(fornecedor))
+        //                condicoes.Add("Fornecedor = @fornecedor");
+
+        //            if (condicoes.Count > 0)
+        //                query += " AND " + string.Join(" AND ", condicoes);
+
+        //            if (isConfeccao)
+        //            {
+        //                query += " ORDER BY Mercadoria, Tam, Cores";
+        //            }
+        //            else
+        //            {
+        //                query += " ORDER BY Mercadoria";
+        //            }
+
+        //            using (var cmd = new SQLiteCommand(query, conn))
+        //            {
+        //                if (!string.IsNullOrEmpty(grupo))
+        //                    cmd.Parameters.AddWithValue("@grupo", grupo);
+
+        //                if (!string.IsNullOrEmpty(fabricante))
+        //                    cmd.Parameters.AddWithValue("@fabricante", fabricante);
+
+        //                if (!string.IsNullOrEmpty(fornecedor))
+        //                    cmd.Parameters.AddWithValue("@fornecedor", fornecedor);
+
+        //                DataTable dt = new DataTable();
+        //                using (var adapter = new SQLiteDataAdapter(cmd))
+        //                {
+        //                    adapter.Fill(dt);
+        //                }
+
+        //                System.Diagnostics.Debug.WriteLine($"BuscarMercadoriasPorFiltros (isConfeccao={isConfeccao}): {dt.Rows.Count} linhas");
+
+        //                return dt;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        System.Diagnostics.Debug.WriteLine($"Erro ao buscar mercadorias por filtros: {ex.Message}");
+        //        return new DataTable();
+        //    }
+        //}
+
+
+        public static DataTable BuscarMercadoriasPorFiltros(
+    string grupo = null,
+    string fabricante = null,
+    string fornecedor = null,
+    bool isConfeccao = false,
+    int? idPromocao = null) // ⭐ Novo parâmetro opcional
         {
             try
             {
@@ -581,6 +673,7 @@ namespace EtiquetaFORNew.Data
                 {
                     conn.Open();
 
+                    // Adicionamos PrecoVenda as PrecoOriginal e PrecoPromocional para o Grid reconhecer
                     string query = @"
                 SELECT 
                     CodigoMercadoria,
@@ -588,11 +681,9 @@ namespace EtiquetaFORNew.Data
                     CodBarras,
                     Mercadoria,
                     PrecoVenda,
-                    VendaA,
-                    VendaB,
-                    VendaC,
-                    VendaD,         
-                    VendaE,
+                    PrecoVenda as PrecoOriginal, 
+                    PrecoPromocional,
+                    VendaA, VendaB, VendaC, VendaD, VendaE,
                     Fornecedor,
                     Fabricante,
                     Grupo,
@@ -601,7 +692,8 @@ namespace EtiquetaFORNew.Data
                     Tam,
                     Cores,
                     CodBarras_Grade,
-                    Registro
+                    Registro,
+                    ID_Promocao
                 FROM Mercadorias
                 WHERE 1=1
             ";
@@ -617,28 +709,23 @@ namespace EtiquetaFORNew.Data
                     if (!string.IsNullOrEmpty(fornecedor))
                         condicoes.Add("Fornecedor = @fornecedor");
 
+                    // ⭐ FILTRO DE PROMOÇÃO
+                    if (idPromocao.HasValue)
+                        condicoes.Add("EmPromocao = 1 AND ID_Promocao = @idPromocao");
+
                     if (condicoes.Count > 0)
                         query += " AND " + string.Join(" AND ", condicoes);
 
-                    if (isConfeccao)
-                    {
-                        query += " ORDER BY Mercadoria, Tam, Cores";
-                    }
-                    else
-                    {
-                        query += " ORDER BY Mercadoria";
-                    }
+                    query += isConfeccao ? " ORDER BY Mercadoria, Tam, Cores" : " ORDER BY Mercadoria";
 
                     using (var cmd = new SQLiteCommand(query, conn))
                     {
-                        if (!string.IsNullOrEmpty(grupo))
-                            cmd.Parameters.AddWithValue("@grupo", grupo);
+                        if (!string.IsNullOrEmpty(grupo)) cmd.Parameters.AddWithValue("@grupo", grupo);
+                        if (!string.IsNullOrEmpty(fabricante)) cmd.Parameters.AddWithValue("@fabricante", fabricante);
+                        if (!string.IsNullOrEmpty(fornecedor)) cmd.Parameters.AddWithValue("@fornecedor", fornecedor);
 
-                        if (!string.IsNullOrEmpty(fabricante))
-                            cmd.Parameters.AddWithValue("@fabricante", fabricante);
-
-                        if (!string.IsNullOrEmpty(fornecedor))
-                            cmd.Parameters.AddWithValue("@fornecedor", fornecedor);
+                        // ⭐ SETA O ID DA PROMOÇÃO
+                        if (idPromocao.HasValue) cmd.Parameters.AddWithValue("@idPromocao", idPromocao.Value);
 
                         DataTable dt = new DataTable();
                         using (var adapter = new SQLiteDataAdapter(cmd))
@@ -646,15 +733,13 @@ namespace EtiquetaFORNew.Data
                             adapter.Fill(dt);
                         }
 
-                        System.Diagnostics.Debug.WriteLine($"BuscarMercadoriasPorFiltros (isConfeccao={isConfeccao}): {dt.Rows.Count} linhas");
-
                         return dt;
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Erro ao buscar mercadorias por filtros: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Erro ao buscar mercadorias: {ex.Message}");
                 return new DataTable();
             }
         }

@@ -109,7 +109,8 @@ namespace EtiquetaFORNew.Data
                 // 2. DESVIO PARA SOFTCOM SHOP (WEB)
                 if (config.TipoConexaoAtiva == TipoConexao.SoftcomShop)
                 {
-                    return LocalDatabaseManager.BuscarMercadoriasPorFiltros("EmPromocao = 1");
+                    //string filtro = $"EmPromocao = 1 AND ID_Promocao = {idPromocao}";
+                    return LocalDatabaseManager.BuscarMercadoriasPorFiltros(idPromocao: idPromocao);
                 }
 
                 string connectionString = DatabaseConfig.GetConnectionString();

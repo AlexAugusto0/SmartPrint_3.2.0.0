@@ -2612,6 +2612,12 @@ namespace EtiquetaFORNew
                         isConfeccao: isConfeccao,
                         idPromocao: idPromocao // ⭐ NOVO parâmetro
                     );
+
+                    if (mercadoriasFiltradas != null)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"DEBUG: Colunas retornadas: {string.Join(", ", mercadoriasFiltradas.Columns.Cast<DataColumn>().Select(c => c.ColumnName))}");
+                    }
+
                     //AjustarLargurasGridParaPromocao();
                     Cursor = Cursors.Default;
 
@@ -2671,11 +2677,18 @@ namespace EtiquetaFORNew
                             AdicionarProdutoAoPanel(row);
                             adicionados++;
                         }
+                        //catch (Exception exRow)
+                        //{
+                        //    erros++;
+                        //    System.Diagnostics.Debug.WriteLine(
+                        //        $"Erro ao adicionar produto {row["Mercadoria"]}: {exRow.Message}");
+                        //}
+
                         catch (Exception exRow)
                         {
                             erros++;
-                            System.Diagnostics.Debug.WriteLine(
-                                $"Erro ao adicionar produto {row["Mercadoria"]}: {exRow.Message}");
+                            // Isso vai te mostrar exatamente qual coluna o C# não encontrou:
+                            MessageBox.Show($"Coluna faltando: {exRow.Message}");
                         }
                     }
 
@@ -3194,9 +3207,11 @@ namespace EtiquetaFORNew
                 // Os valores já vieram corretos do banco de dados
                 // ComboBoxes só são usadas no lançamento MANUAL individual
             }
-            catch
+            catch (Exception exRow)
             {
-                // Se falhar ao ler campos adicionais, continua com dados básicos
+                //erros++;
+                // Isso vai te mostrar exatamente qual coluna o C# não encontrou:
+                MessageBox.Show($"Coluna faltando: {exRow.Message}");
             }
 
             // ========================================

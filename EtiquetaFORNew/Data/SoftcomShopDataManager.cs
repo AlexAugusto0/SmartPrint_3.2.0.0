@@ -685,57 +685,95 @@ namespace EtiquetaFORNew
             config.SoftcomShop.DataSync = timestamp;
             config.Salvar();
         }
+
         //public async Task SincronizarPromocoesAtivasAsync()
         //{
         //    try
         //    {
-        //        // 1. Chama o método que você postou acima para obter o JSON               
-        //        string jsonResponse = await _softcomShopService.GetPromocoesAsync();
-        //        var response = JObject.Parse(jsonResponse);
-        //        var promocoes = response["data"] as JArray;
+        //        string jsonResponse = await _service.GetPromocoesAsync();
+        //        if (string.IsNullOrEmpty(jsonResponse)) return;
 
-        //        if (promocoes == null) return;
+        //        var response = JToken.Parse(jsonResponse);
+        //        // No seu JSON, os dados estão dentro de "data"
+        //        var listaPromocoes = response["data"] ?? response["produtos"] ?? response;
 
         //        using (var conn = new SQLiteConnection(_connectionString))
         //        {
         //            await conn.OpenAsync();
 
+        //            // 1. GARANTIR ESTRUTURA (Paridade com Access)
+        //            using (var cmdTable = new SQLiteCommand(@"
+        //        CREATE TABLE IF NOT EXISTS Promocoes (
+        //            ID_Promocao INTEGER PRIMARY KEY,
+        //            Descricao TEXT,
+        //            Data_Hora_Inicio TEXT,
+        //            Data_Hora_Fim TEXT,
+        //            Status TEXT
+        //        )", conn))
+        //            {
+        //                await cmdTable.ExecuteNonQueryAsync();
+        //            }
+
         //            using (var transaction = conn.BeginTransaction())
         //            {
-        //                // 2. RESET: Antes de aplicar as novas, zeramos as promoções antigas no SQLite
-        //                // Isso garante que se uma promoção acabou no Web, ela saia da etiqueta local.
-        //                using (var cmdReset = new SQLiteCommand("UPDATE Mercadorias SET PrecoPromocional = 0, EmPromocao = 0", conn))
-        //                {
-        //                    await cmdReset.ExecuteNonQueryAsync();
-        //                }
+        //                // 2. LIMPEZA PARA ATUALIZAÇÃO
+        //                using (var cmdResetMerc = new SQLiteCommand("UPDATE Mercadorias SET EmPromocao = 0, PrecoPromocional = 0", conn))
+        //                    await cmdResetMerc.ExecuteNonQueryAsync();
 
-        //                // 3. PROCESSAMENTO: Percorre as promoções vindas do Web
-        //                foreach (var promo in promocoes)
-        //                {
-        //                    var itens = promo["itens"] as JArray;
-        //                    if (itens == null) continue;
+        //                using (var cmdClearPromo = new SQLiteCommand("DELETE FROM Promocoes", conn))
+        //                    await cmdClearPromo.ExecuteNonQueryAsync();
 
-        //                    foreach (var item in itens)
+        //                // 3. ALIMENTAR AS TABELAS
+        //                foreach (var item in listaPromocoes)
+        //                {
+        //                    // --- A: SALVAR NA TABELA PROMOCOES (Para a ComboBox) ---
+        //                    string promoId = item["id"]?.ToString() ?? "0";
+        //                    string promoDesc = item["descricao"]?.ToString()?.ToUpper() ?? "PROMOÇÃO SEM NOME";
+
+        //                    using (var cmdPromo = new SQLiteCommand(@"
+        //                INSERT INTO Promocoes (ID_Promocao, Descricao, Data_Hora_Inicio, Data_Hora_Fim, Status) 
+        //                VALUES (@id, @desc, @ini, @fim, @status)", conn))
         //                    {
-        //                        // No JSON do SoftcomShop, o vínculo costuma ser pelo CodigoMercadoria (SKU/EAN)
-        //                        string sku = item["CodigoMercadoria"]?.ToString() ?? "";
-        //                        decimal precoPromocional = item["Preco"]?.ToObject<decimal>() ?? 0;
+        //                        cmdPromo.Parameters.AddWithValue("@id", promoId);
+        //                        cmdPromo.Parameters.AddWithValue("@desc", promoDesc);
+        //                        cmdPromo.Parameters.AddWithValue("@ini", item["data_hora_inicio"]?.ToString());
+        //                        cmdPromo.Parameters.AddWithValue("@fim", item["data_hora_fim"]?.ToString());
+        //                        cmdPromo.Parameters.AddWithValue("@status", item["status"]?.ToString());
+        //                        await cmdPromo.ExecuteNonQueryAsync();
+        //                    }
 
-        //                        if (string.IsNullOrEmpty(sku)) continue;
+        //                    // --- B: ATUALIZAR MERCADORIAS (Para o Grid/Etiquetas) ---
+        //                    var subItens = item["itens"] as JArray ?? new JArray(item);
+        //                    foreach (var promo in subItens)
+        //                    {
+        //                        string idProdApi = (promo["produto_id"] ?? promo["id"])?.ToString() ?? "";
+        //                        string precoBruto = (promo["valor_promocional_unidade"] ?? promo["preco_venda"])?.ToString() ?? "0";
 
-        //                        // 4. ATUALIZAÇÃO: Grava o preço de oferta na mercadoria correspondente
-        //                        // Usamos o CodBarras ou CodBarras_Grade para garantir que atinja o item certo
-        //                        string sqlUpdate = @"
-        //                    UPDATE Mercadorias 
-        //                    SET PrecoPromocional = @preco,
-        //                        EmPromocao = 1
-        //                    WHERE CodBarras = @sku OR CodBarras_Grade = @sku";
+        //                        decimal preco = 0;
+        //                        decimal.TryParse(precoBruto.Replace(",", "."),
+        //                            System.Globalization.NumberStyles.Any,
+        //                            System.Globalization.CultureInfo.InvariantCulture, out preco);
 
-        //                        using (var cmdUpd = new SQLiteCommand(sqlUpdate, conn))
+        //                        if (preco > 0)
         //                        {
-        //                            cmdUpd.Parameters.AddWithValue("@preco", precoPromocional);
-        //                            cmdUpd.Parameters.AddWithValue("@sku", sku);
-        //                            await cmdUpd.ExecuteNonQueryAsync();
+        //                            //    string sqlUpdate = @"
+        //                            //UPDATE Mercadorias 
+        //                            //SET EmPromocao = 1, PrecoPromocional = @p, Origem = 'PROMOCAO'
+        //                            //WHERE ID_SoftcomShop = @id OR CodigoMercadoria = @id";
+        //                            string sqlUpdate = @"
+        //                                UPDATE Mercadorias 
+        //                                SET EmPromocao = 1, 
+        //                                    PrecoPromocional = @p, 
+        //                                    Origem = 'PROMOCAO',
+        //                                    ID_Promocao = @idPromo 
+        //                                WHERE ID_SoftcomShop = @id OR CodigoMercadoria = @id";
+
+        //                            using (var cmdUpd = new SQLiteCommand(sqlUpdate, conn))
+        //                            {
+        //                                cmdUpd.Parameters.AddWithValue("@p", preco);
+        //                                cmdUpd.Parameters.AddWithValue("@id", idProdApi);
+        //                                await cmdUpd.ExecuteNonQueryAsync();
+        //                            }
         //                        }
         //                    }
         //                }
@@ -745,7 +783,7 @@ namespace EtiquetaFORNew
         //    }
         //    catch (Exception ex)
         //    {
-        //        throw new Exception($"Erro ao integrar promoções: {ex.Message}");
+        //        System.Diagnostics.Debug.WriteLine("Erro Sincronização: " + ex.Message);
         //    }
         //}
 
@@ -757,14 +795,23 @@ namespace EtiquetaFORNew
                 if (string.IsNullOrEmpty(jsonResponse)) return;
 
                 var response = JToken.Parse(jsonResponse);
-                // No seu JSON, os dados estão dentro de "data"
                 var listaPromocoes = response["data"] ?? response["produtos"] ?? response;
 
                 using (var conn = new SQLiteConnection(_connectionString))
                 {
                     await conn.OpenAsync();
 
-                    // 1. GARANTIR ESTRUTURA (Paridade com Access)
+                    // --- NOVO: GARANTIR QUE A COLUNA ID_Promocao EXISTE NA TABELA MERCADORIAS ---
+                    try
+                    {
+                        using (var cmdAlter = new SQLiteCommand("ALTER TABLE Mercadorias ADD COLUMN ID_Promocao INTEGER", conn))
+                        {
+                            await cmdAlter.ExecuteNonQueryAsync();
+                        }
+                    }
+                    catch { /* Coluna já existe, ignora o erro */ }
+
+                    // 1. GARANTIR ESTRUTURA DA TABELA DE PROMOÇÕES
                     using (var cmdTable = new SQLiteCommand(@"
                 CREATE TABLE IF NOT EXISTS Promocoes (
                     ID_Promocao INTEGER PRIMARY KEY,
@@ -779,20 +826,24 @@ namespace EtiquetaFORNew
 
                     using (var transaction = conn.BeginTransaction())
                     {
-                        // 2. LIMPEZA PARA ATUALIZAÇÃO
-                        using (var cmdResetMerc = new SQLiteCommand("UPDATE Mercadorias SET EmPromocao = 0, PrecoPromocional = 0", conn))
+                        // 2. LIMPEZA PARA ATUALIZAÇÃO (Resetamos o ID_Promocao também)
+                        using (var cmdResetMerc = new SQLiteCommand("UPDATE Mercadorias SET EmPromocao = 0, PrecoPromocional = 0, ID_Promocao = NULL", conn))
+                        {
                             await cmdResetMerc.ExecuteNonQueryAsync();
+                        }
 
                         using (var cmdClearPromo = new SQLiteCommand("DELETE FROM Promocoes", conn))
+                        {
                             await cmdClearPromo.ExecuteNonQueryAsync();
+                        }
 
                         // 3. ALIMENTAR AS TABELAS
                         foreach (var item in listaPromocoes)
                         {
-                            // --- A: SALVAR NA TABELA PROMOCOES (Para a ComboBox) ---
                             string promoId = item["id"]?.ToString() ?? "0";
                             string promoDesc = item["descricao"]?.ToString()?.ToUpper() ?? "PROMOÇÃO SEM NOME";
 
+                            // A: SALVAR NA TABELA PROMOCOES
                             using (var cmdPromo = new SQLiteCommand(@"
                         INSERT INTO Promocoes (ID_Promocao, Descricao, Data_Hora_Inicio, Data_Hora_Fim, Status) 
                         VALUES (@id, @desc, @ini, @fim, @status)", conn))
@@ -805,7 +856,7 @@ namespace EtiquetaFORNew
                                 await cmdPromo.ExecuteNonQueryAsync();
                             }
 
-                            // --- B: ATUALIZAR MERCADORIAS (Para o Grid/Etiquetas) ---
+                            // B: ATUALIZAR MERCADORIAS VINCULANDO AO ID DA PROMOÇÃO
                             var subItens = item["itens"] as JArray ?? new JArray(item);
                             foreach (var promo in subItens)
                             {
@@ -821,13 +872,17 @@ namespace EtiquetaFORNew
                                 {
                                     string sqlUpdate = @"
                                 UPDATE Mercadorias 
-                                SET EmPromocao = 1, PrecoPromocional = @p, Origem = 'PROMOCAO'
+                                SET EmPromocao = 1, 
+                                    PrecoPromocional = @p, 
+                                    Origem = 'PROMOCAO',
+                                    ID_Promocao = @idPromo 
                                 WHERE ID_SoftcomShop = @id OR CodigoMercadoria = @id";
 
                                     using (var cmdUpd = new SQLiteCommand(sqlUpdate, conn))
                                     {
                                         cmdUpd.Parameters.AddWithValue("@p", preco);
                                         cmdUpd.Parameters.AddWithValue("@id", idProdApi);
+                                        cmdUpd.Parameters.AddWithValue("@idPromo", promoId); // <-- Vínculo corrigido
                                         await cmdUpd.ExecuteNonQueryAsync();
                                     }
                                 }
