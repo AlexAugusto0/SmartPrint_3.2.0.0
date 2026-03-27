@@ -22,8 +22,17 @@ namespace EtiquetaFORNew.Data
 
             if (config.TipoConexaoAtiva == TipoConexao.SoftcomShop)
             {
-                // Força o uso do banco local de cache
-                string dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LocalData.db");
+                // ⭐ CAMINHO EXATO: bin\Debug\localdata\LocalData.db
+                string dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "localdata", "LocalData.db");
+
+                // Verificação de segurança para o Log
+                if (!File.Exists(dbPath))
+                {
+                    System.Diagnostics.Debug.WriteLine($"⚠️ ARQUIVO NÃO ENCONTRADO EM: {dbPath}");
+                    // Tenta na raiz caso não esteja na subpasta localdata
+                    dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "LocalData.db");
+                }
+
                 return BuscarPromocoesAtivasSQLite(dbPath);
             }
             try
@@ -234,20 +243,35 @@ namespace EtiquetaFORNew.Data
             dt.Columns.Add("ID_Promocao", typeof(int));
             dt.Columns.Add("Descricao", typeof(string));
 
-            using (var conn = new System.Data.SQLite.SQLiteConnection($"Data Source={caminhoBanco};Version=3;"))
+            if (!File.Exists(caminhoBanco)) return dt;
+
+            try
             {
-                conn.Open();
-                // Se houver qualquer item com EmPromocao = 1, habilitamos a opção no Combo
-                string sql = "SELECT COUNT(*) FROM Mercadorias WHERE EmPromocao = 1 AND PrecoPromocional > 0";
-                using (var cmd = new System.Data.SQLite.SQLiteCommand(sql, conn))
+                using (var conn = new System.Data.SQLite.SQLiteConnection($"Data Source={caminhoBanco};Version=3;"))
                 {
-                    var result = cmd.ExecuteScalar();
-                    if (result != DBNull.Value && Convert.ToInt32(result) > 0)
+                    conn.Open();
+
+                    // Busca as promoções reais que você sincronizou da Web
+                    string sql = "SELECT ID_Promocao, Descricao FROM Promocoes ORDER BY Descricao";
+
+                    using (var cmd = new System.Data.SQLite.SQLiteCommand(sql, conn))
                     {
-                        dt.Rows.Add(999, "PROMOÇÕES SOFTCOM SHOP (WEB)");
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                dt.Rows.Add(reader["ID_Promocao"], reader["Descricao"].ToString().ToUpper());
+                            }
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                // Se a tabela ainda não existir no primeiro acesso, retorna vazio sem travar
+                System.Diagnostics.Debug.WriteLine("Aviso: Tabela de promoções ainda não disponível.");
+            }
+
             return dt;
         }
     }

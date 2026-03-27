@@ -3286,30 +3286,205 @@ namespace EtiquetaFORNew
             tela.ShowDialog();
         }
 
-        private void btnSincronizar_Click(object sender, EventArgs e)
+        //private void btnSincronizar_Click(object sender, EventArgs e)
+        //{
+        //    try
+        //    {
+        //        // ⭐ DETECTAR MODO DE OPERAÇÃO
+        //        ConfiguracaoSistema config = null;
+        //        bool isSoftcomShop = false;
+
+        //        try
+        //        {
+        //            config = ConfiguracaoSistema.Carregar();
+        //            isSoftcomShop = config.TipoConexaoAtiva == TipoConexao.SoftcomShop;
+        //        }
+        //        catch
+        //        {
+        //            isSoftcomShop = false;
+        //        }
+
+        //        // ⭐ MENSAGEM PERSONALIZADA POR MODO
+        //        string mensagem = isSoftcomShop
+        //            ? "Deseja sincronizar os produtos do SoftcomShop?\n\n" +
+        //              "Isso irá buscar produtos e promoções atualizados da API."
+        //            : "Deseja sincronizar as mercadorias do SQL Server?\n\n" +
+        //              "Isso pode levar alguns minutos dependendo da quantidade de registros.";
+
+        //        if (MessageBox.Show(mensagem, "Confirmar Sincronização",
+        //            MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+        //        {
+        //            return;
+        //        }
+
+        //        Cursor = Cursors.WaitCursor;
+        //        btnSincronizar.Enabled = false;
+
+        //        int total = 0;
+
+        //        if (isSoftcomShop)
+        //        {
+        //            // ⭐ MODO SOFTCOMSHOP
+        //            try
+        //            {
+        //                Cursor = Cursors.Default;
+
+        //                using (var formSync = new FormSincronizacaoSoftcomShop())
+        //                {
+        //                    var resultado = formSync.ShowDialog();
+
+        //                    if (resultado == DialogResult.Cancel)
+        //                    {
+        //                        btnSincronizar.Enabled = true;
+        //                        return;
+        //                    }
+        //                }
+
+        //                Cursor = Cursors.WaitCursor;
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                Cursor = Cursors.Default;
+        //                btnSincronizar.Enabled = true;
+
+        //                MessageBox.Show($"Erro ao sincronizar SoftcomShop:\n\n{ex.Message}",
+        //                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //                return;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            // ⭐ MODO SQL SERVER
+        //            total = LocalDatabaseManager.SincronizarMercadorias();
+        //        }
+
+        //        // ⭐⭐⭐ LIMPEZA TOTAL E RECARREGAMENTO FORÇADO ⭐⭐⭐
+
+        //        // 1. LIMPAR DATATABLE
+        //        if (mercadorias != null)
+        //        {
+        //            try
+        //            {
+        //                mercadorias.Clear();
+        //                mercadorias.Dispose();
+        //            }
+        //            catch { }
+        //            mercadorias = null;
+        //        }
+
+        //        // 2. LIMPAR COMBOBOX NOME
+        //        if (cmbBuscaNome != null)
+        //        {
+        //            try
+        //            {
+        //                cmbBuscaNome.DataSource = null;
+        //                cmbBuscaNome.Items.Clear();
+        //                cmbBuscaNome.Text = "";
+        //                if (cmbBuscaNome.AutoCompleteCustomSource != null)
+        //                {
+        //                    cmbBuscaNome.AutoCompleteCustomSource.Clear();
+        //                }
+        //            }
+        //            catch { }
+        //        }
+
+        //        // 3. LIMPAR COMBOBOX REFERÊNCIA
+        //        if (cmbBuscaReferencia != null)
+        //        {
+        //            try
+        //            {
+        //                cmbBuscaReferencia.DataSource = null;
+        //                cmbBuscaReferencia.Items.Clear();
+        //                cmbBuscaReferencia.Text = "";
+        //                if (cmbBuscaReferencia.AutoCompleteCustomSource != null)
+        //                {
+        //                    cmbBuscaReferencia.AutoCompleteCustomSource.Clear();
+        //                }
+        //            }
+        //            catch { }
+        //        }
+
+        //        // 4. LIMPAR COMBOBOX CÓDIGO
+        //        if (cmbBuscaCodigo != null)
+        //        {
+        //            try
+        //            {
+        //                cmbBuscaCodigo.DataSource = null;
+        //                cmbBuscaCodigo.Items.Clear();
+        //                cmbBuscaCodigo.Text = "";
+        //                if (cmbBuscaCodigo.AutoCompleteCustomSource != null)
+        //                {
+        //                    cmbBuscaCodigo.AutoCompleteCustomSource.Clear();
+        //                }
+        //            }
+        //            catch { }
+        //        }
+
+        //        // 5. FORÇAR FLAG DE RECARREGAMENTO
+        //        mercadoriasCarregadas = false;
+
+        //        // 6. AGUARDAR UM MOMENTO PARA GARANTIR LIMPEZA
+        //        Application.DoEvents();
+        //        System.Threading.Thread.Sleep(100);
+
+        //        // 7. RECARREGAR TUDO
+        //        try
+        //        {
+        //            CarregarTodasMercadorias();
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            MessageBox.Show($"Erro ao recarregar mercadorias:\n\n{ex.Message}",
+        //                "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //        }
+
+        //        // 8. FORÇAR ATUALIZAÇÃO DA INTERFACE
+        //        Application.DoEvents();
+
+        //        Cursor = Cursors.Default;
+        //        btnSincronizar.Enabled = true;
+
+        //        // ⭐ MENSAGEM DE SUCESSO
+        //        string modoTexto = isSoftcomShop ? "SoftcomShop" : "SQL Server";
+
+        //        if (isSoftcomShop)
+        //        {
+        //            MessageBox.Show(
+        //                "Sincronização SoftcomShop concluída com sucesso!\n\n" +
+        //                "Os produtos foram atualizados.",
+        //                "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        //        }
+        //        else
+        //        {
+        //            MessageBox.Show(
+        //                $"Sincronização SQL Server concluída com sucesso!\n\n" +
+        //                $"Total de mercadorias importadas: {total:N0}",
+        //                "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Cursor = Cursors.Default;
+        //        btnSincronizar.Enabled = true;
+
+        //        MessageBox.Show($"Erro ao sincronizar:\n\n{ex.Message}",
+        //            "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //    }
+        //}
+
+
+        private async void btnSincronizar_Click(object sender, EventArgs e)
         {
             try
             {
-                // ⭐ DETECTAR MODO DE OPERAÇÃO
-                ConfiguracaoSistema config = null;
-                bool isSoftcomShop = false;
+                // 1. DETECTAR MODO DE OPERAÇÃO
+                ConfiguracaoSistema config = ConfiguracaoSistema.Carregar();
+                bool isSoftcomShop = config.TipoConexaoAtiva == TipoConexao.SoftcomShop;
 
-                try
-                {
-                    config = ConfiguracaoSistema.Carregar();
-                    isSoftcomShop = config.TipoConexaoAtiva == TipoConexao.SoftcomShop;
-                }
-                catch
-                {
-                    isSoftcomShop = false;
-                }
-
-                // ⭐ MENSAGEM PERSONALIZADA POR MODO
+                // 2. MENSAGEM PERSONALIZADA
                 string mensagem = isSoftcomShop
-                    ? "Deseja sincronizar os produtos do SoftcomShop?\n\n" +
-                      "Isso irá buscar produtos e promoções atualizados da API."
-                    : "Deseja sincronizar as mercadorias do SQL Server?\n\n" +
-                      "Isso pode levar alguns minutos dependendo da quantidade de registros.";
+                    ? "Deseja sincronizar os produtos e promoções do SoftcomShop?"
+                    : "Deseja sincronizar as mercadorias do SQL Server?";
 
                 if (MessageBox.Show(mensagem, "Confirmar Sincronização",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
@@ -3317,160 +3492,79 @@ namespace EtiquetaFORNew
                     return;
                 }
 
-                Cursor = Cursors.WaitCursor;
                 btnSincronizar.Enabled = false;
-
                 int total = 0;
 
                 if (isSoftcomShop)
                 {
-                    // ⭐ MODO SOFTCOMSHOP
-                    try
+                    // MODO SOFTCOMSHOP: Abre o form que gerencia a API
+                    using (var formSync = new FormSincronizacaoSoftcomShop())
                     {
-                        Cursor = Cursors.Default;
-
-                        using (var formSync = new FormSincronizacaoSoftcomShop())
+                        // O FormSincronizacaoSoftcomShop deve chamar internamente:
+                        // 1. SincronizarProdutosAsync
+                        // 2. SincronizarPromocoesAtivasAsync
+                        if (formSync.ShowDialog() != DialogResult.OK)
                         {
-                            var resultado = formSync.ShowDialog();
-
-                            if (resultado == DialogResult.Cancel)
-                            {
-                                btnSincronizar.Enabled = true;
-                                return;
-                            }
+                            btnSincronizar.Enabled = true;
+                            return;
                         }
-
-                        Cursor = Cursors.WaitCursor;
-                    }
-                    catch (Exception ex)
-                    {
-                        Cursor = Cursors.Default;
-                        btnSincronizar.Enabled = true;
-
-                        MessageBox.Show($"Erro ao sincronizar SoftcomShop:\n\n{ex.Message}",
-                            "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
                     }
                 }
                 else
                 {
-                    // ⭐ MODO SQL SERVER
+                    // MODO SQL SERVER
+                    Cursor = Cursors.WaitCursor;
                     total = LocalDatabaseManager.SincronizarMercadorias();
+                    Cursor = Cursors.Default;
                 }
 
-                // ⭐⭐⭐ LIMPEZA TOTAL E RECARREGAMENTO FORÇADO ⭐⭐⭐
+                // 3. RECARREGAMENTO FORÇADO DA INTERFACE (Promoções e Produtos)
+                LimparErecarregarInterface();
 
-                // 1. LIMPAR DATATABLE
-                if (mercadorias != null)
-                {
-                    try
-                    {
-                        mercadorias.Clear();
-                        mercadorias.Dispose();
-                    }
-                    catch { }
-                    mercadorias = null;
-                }
-
-                // 2. LIMPAR COMBOBOX NOME
-                if (cmbBuscaNome != null)
-                {
-                    try
-                    {
-                        cmbBuscaNome.DataSource = null;
-                        cmbBuscaNome.Items.Clear();
-                        cmbBuscaNome.Text = "";
-                        if (cmbBuscaNome.AutoCompleteCustomSource != null)
-                        {
-                            cmbBuscaNome.AutoCompleteCustomSource.Clear();
-                        }
-                    }
-                    catch { }
-                }
-
-                // 3. LIMPAR COMBOBOX REFERÊNCIA
-                if (cmbBuscaReferencia != null)
-                {
-                    try
-                    {
-                        cmbBuscaReferencia.DataSource = null;
-                        cmbBuscaReferencia.Items.Clear();
-                        cmbBuscaReferencia.Text = "";
-                        if (cmbBuscaReferencia.AutoCompleteCustomSource != null)
-                        {
-                            cmbBuscaReferencia.AutoCompleteCustomSource.Clear();
-                        }
-                    }
-                    catch { }
-                }
-
-                // 4. LIMPAR COMBOBOX CÓDIGO
-                if (cmbBuscaCodigo != null)
-                {
-                    try
-                    {
-                        cmbBuscaCodigo.DataSource = null;
-                        cmbBuscaCodigo.Items.Clear();
-                        cmbBuscaCodigo.Text = "";
-                        if (cmbBuscaCodigo.AutoCompleteCustomSource != null)
-                        {
-                            cmbBuscaCodigo.AutoCompleteCustomSource.Clear();
-                        }
-                    }
-                    catch { }
-                }
-
-                // 5. FORÇAR FLAG DE RECARREGAMENTO
-                mercadoriasCarregadas = false;
-
-                // 6. AGUARDAR UM MOMENTO PARA GARANTIR LIMPEZA
-                Application.DoEvents();
-                System.Threading.Thread.Sleep(100);
-
-                // 7. RECARREGAR TUDO
-                try
-                {
-                    CarregarTodasMercadorias();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Erro ao recarregar mercadorias:\n\n{ex.Message}",
-                        "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-
-                // 8. FORÇAR ATUALIZAÇÃO DA INTERFACE
-                Application.DoEvents();
-
-                Cursor = Cursors.Default;
-                btnSincronizar.Enabled = true;
-
-                // ⭐ MENSAGEM DE SUCESSO
-                string modoTexto = isSoftcomShop ? "SoftcomShop" : "SQL Server";
-
-                if (isSoftcomShop)
-                {
-                    MessageBox.Show(
-                        "Sincronização SoftcomShop concluída com sucesso!\n\n" +
-                        "Os produtos foram atualizados.",
-                        "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show(
-                        $"Sincronização SQL Server concluída com sucesso!\n\n" +
-                        $"Total de mercadorias importadas: {total:N0}",
-                        "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+                MessageBox.Show(isSoftcomShop
+                    ? "Sincronização SoftcomShop (Produtos e Promoções) concluída!"
+                    : $"Sincronização SQL Server concluída! Total: {total}",
+                    "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                Cursor = Cursors.Default;
+                MessageBox.Show($"Erro: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
                 btnSincronizar.Enabled = true;
-
-                MessageBox.Show($"Erro ao sincronizar:\n\n{ex.Message}",
-                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Cursor = Cursors.Default;
             }
         }
+
+        // Método auxiliar para evitar repetição de código de limpeza
+        private void LimparErecarregarInterface()
+        {
+            Cursor = Cursors.WaitCursor;
+
+            // Limpar DataTable
+            if (mercadorias != null) { mercadorias.Clear(); mercadorias = null; }
+
+            // Limpar Combos
+            var combos = new[] { cmbBuscaNome, cmbBuscaReferencia, cmbBuscaCodigo };
+            foreach (var cb in combos)
+            {
+                if (cb == null) continue;
+                cb.DataSource = null;
+                cb.Items.Clear();
+                cb.Text = "";
+                cb.AutoCompleteCustomSource?.Clear();
+            }
+
+            mercadoriasCarregadas = false;
+            Application.DoEvents();
+
+            // Recarregar dados do SQLite para a memória
+            CarregarTodasMercadorias();
+
+            Cursor = Cursors.Default;
+        }
+
         private void DEBUG_VerificarBancoECache()
 {
     try

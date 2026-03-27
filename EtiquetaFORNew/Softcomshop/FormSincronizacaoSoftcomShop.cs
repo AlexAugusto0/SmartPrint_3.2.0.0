@@ -94,7 +94,21 @@ namespace EtiquetaFORNew
                 progressBar.Visible = true;
 
                 // Sincronizar
+                //var syncResult = await _dataManager.SincronizarProdutosAsync("v2", progress);
+
                 var syncResult = await _dataManager.SincronizarProdutosAsync("v2", progress);
+
+                // ⭐ NOVO - sincronizar promoções logo após produtos
+                //progress.Report("Sincronizando promoções...");                
+                if (syncResult.Sucesso)
+                {
+                    // ⭐ ISSO AQUI É O QUE ESTAVA FALTANDO CHAMAR!
+                    lblStatus.Text = "Sincronizando Promoções Ativas...";
+                    await _dataManager.SincronizarPromocoesAtivasAsync();
+
+                    // Define OK para o form principal saber que deve recarregar os combos
+                    this.DialogResult = DialogResult.OK;
+                }
 
                 // â­ REGISTRAR USO DO SISTEMA
                 await RegistrarUsoSistemaAsync();
@@ -328,7 +342,7 @@ namespace EtiquetaFORNew
                 // que busca CodigoSuporte direto da tabela Integrar_Lojas).
                 string codigoSuporte = _config.SoftcomShop.ClientId ?? "";
 
-                // Validar dados mÃ­nimos
+                // Validar dados mí­nimos
                 if (string.IsNullOrEmpty(cnpj) || string.IsNullOrEmpty(fantasia) || string.IsNullOrEmpty(codigoSuporte))
                 {
                     System.Diagnostics.Debug.WriteLine("[REGISTRO SOFTCOMSHOP] Dados incompletos para registro");

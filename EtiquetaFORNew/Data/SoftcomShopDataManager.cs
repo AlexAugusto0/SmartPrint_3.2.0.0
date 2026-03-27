@@ -753,84 +753,127 @@ namespace EtiquetaFORNew
         {
             try
             {
-                // 1. Obtém os dados da API
                 string jsonResponse = await _service.GetPromocoesAsync();
                 if (string.IsNullOrEmpty(jsonResponse)) return;
 
                 var response = JToken.Parse(jsonResponse);
-                // Garante a leitura independente da versão da API (v1 ou v2)
+                // No seu JSON, os dados estão dentro de "data"
                 var listaPromocoes = response["data"] ?? response["produtos"] ?? response;
 
-                using (var conn = new System.Data.SQLite.SQLiteConnection(_connectionString))
+                using (var conn = new SQLiteConnection(_connectionString))
                 {
                     await conn.OpenAsync();
+
+                    // 1. GARANTIR ESTRUTURA (Paridade com Access)
+                    using (var cmdTable = new SQLiteCommand(@"
+                CREATE TABLE IF NOT EXISTS Promocoes (
+                    ID_Promocao INTEGER PRIMARY KEY,
+                    Descricao TEXT,
+                    Data_Hora_Inicio TEXT,
+                    Data_Hora_Fim TEXT,
+                    Status TEXT
+                )", conn))
+                    {
+                        await cmdTable.ExecuteNonQueryAsync();
+                    }
+
                     using (var transaction = conn.BeginTransaction())
                     {
-                        // 2. Limpa estados promocionais anteriores (Garante integridade)
-                        using (var cmdReset = new System.Data.SQLite.SQLiteCommand(
-                            "UPDATE Mercadorias SET EmPromocao = 0, PrecoPromocional = 0, Origem = NULL", conn))
-                        {
-                            await cmdReset.ExecuteNonQueryAsync();
-                        }
+                        // 2. LIMPEZA PARA ATUALIZAÇÃO
+                        using (var cmdResetMerc = new SQLiteCommand("UPDATE Mercadorias SET EmPromocao = 0, PrecoPromocional = 0", conn))
+                            await cmdResetMerc.ExecuteNonQueryAsync();
 
+                        using (var cmdClearPromo = new SQLiteCommand("DELETE FROM Promocoes", conn))
+                            await cmdClearPromo.ExecuteNonQueryAsync();
+
+                        // 3. ALIMENTAR AS TABELAS
                         foreach (var item in listaPromocoes)
                         {
-                            var subItens = item["itens"] as JArray ?? (item.HasValues ? new JArray(item) : null);
-                            if (subItens == null) continue;
+                            // --- A: SALVAR NA TABELA PROMOCOES (Para a ComboBox) ---
+                            string promoId = item["id"]?.ToString() ?? "0";
+                            string promoDesc = item["descricao"]?.ToString()?.ToUpper() ?? "PROMOÇÃO SEM NOME";
 
+                            using (var cmdPromo = new SQLiteCommand(@"
+                        INSERT INTO Promocoes (ID_Promocao, Descricao, Data_Hora_Inicio, Data_Hora_Fim, Status) 
+                        VALUES (@id, @desc, @ini, @fim, @status)", conn))
+                            {
+                                cmdPromo.Parameters.AddWithValue("@id", promoId);
+                                cmdPromo.Parameters.AddWithValue("@desc", promoDesc);
+                                cmdPromo.Parameters.AddWithValue("@ini", item["data_hora_inicio"]?.ToString());
+                                cmdPromo.Parameters.AddWithValue("@fim", item["data_hora_fim"]?.ToString());
+                                cmdPromo.Parameters.AddWithValue("@status", item["status"]?.ToString());
+                                await cmdPromo.ExecuteNonQueryAsync();
+                            }
+
+                            // --- B: ATUALIZAR MERCADORIAS (Para o Grid/Etiquetas) ---
+                            var subItens = item["itens"] as JArray ?? new JArray(item);
                             foreach (var promo in subItens)
                             {
-                                // 3. Identificação do Produto (Vínculo com a Nuvem)
-                                // 'produto_id' na API é o ID_SoftcomShop no seu banco
-                                string idApi = (promo["produto_id"] ?? promo["id"])?.ToString()?.Trim() ?? "";
+                                string idProdApi = (promo["produto_id"] ?? promo["id"])?.ToString() ?? "";
+                                string precoBruto = (promo["valor_promocional_unidade"] ?? promo["preco_venda"])?.ToString() ?? "0";
 
-                                // 4. Tratamento do Preço
-                                string precoBruto = (promo["preco_promocional"] ?? promo["valor"])?.ToString() ?? "0";
                                 decimal preco = 0;
-                                decimal.TryParse(precoBruto.Replace(",", "."), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out preco);
+                                decimal.TryParse(precoBruto.Replace(",", "."),
+                                    System.Globalization.NumberStyles.Any,
+                                    System.Globalization.CultureInfo.InvariantCulture, out preco);
 
-                                if (string.IsNullOrEmpty(idApi) || preco <= 0) continue;
-
-                                // 5. Datas de Vigência (Essencial para a consulta Promocoes_Ativas_filtroData)
-                                string dIni = promo["data_inicio"]?.ToString() ?? DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd");
-                                string dFim = promo["data_fim"]?.ToString() ?? DateTime.Now.AddYears(1).ToString("yyyy-MM-dd");
-
-                                // 6. SQL CORRIGIDO (Equivalência ID_SoftcomShop)
-                                // O segredo está em comparar o idApi com ID_SoftcomShop, não com CódigoMercadoria
-                                string sql = @"UPDATE Mercadorias 
-                                     SET EmPromocao = 1, 
-                                         PrecoPromocional = @p,
-                                         Origem = 'PROMOCAO',
-                                         PromocaoDataInicio = @dIni,
-                                         PromocaoDataFim = @dFim
-                                     WHERE TRIM(CAST(ID_SoftcomShop AS TEXT)) = @id 
-                                        OR TRIM(CAST(CodBarras AS TEXT)) = @id";
-
-                                using (var cmd = new System.Data.SQLite.SQLiteCommand(sql, conn))
+                                if (preco > 0)
                                 {
-                                    cmd.Parameters.AddWithValue("@p", preco);
-                                    cmd.Parameters.AddWithValue("@dIni", dIni);
-                                    cmd.Parameters.AddWithValue("@dFim", dFim);
-                                    cmd.Parameters.AddWithValue("@id", idApi);
+                                    string sqlUpdate = @"
+                                UPDATE Mercadorias 
+                                SET EmPromocao = 1, PrecoPromocional = @p, Origem = 'PROMOCAO'
+                                WHERE ID_SoftcomShop = @id OR CodigoMercadoria = @id";
 
-                                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
-
-                                    // LOG DE DIAGNÓSTICO
-                                    if (rowsAffected > 0)
-                                        System.Diagnostics.Debug.WriteLine($"✅ ID {idApi} atualizado com sucesso.");
-                                    else
-                                        System.Diagnostics.Debug.WriteLine($"⚠️ ID {idApi} da API não encontrado no campo ID_SoftcomShop do SQLite.");
+                                    using (var cmdUpd = new SQLiteCommand(sqlUpdate, conn))
+                                    {
+                                        cmdUpd.Parameters.AddWithValue("@p", preco);
+                                        cmdUpd.Parameters.AddWithValue("@id", idProdApi);
+                                        await cmdUpd.ExecuteNonQueryAsync();
+                                    }
                                 }
                             }
                         }
-                        // 7. Confirmação final da gravação no arquivo físico
                         transaction.Commit();
                     }
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception("Falha na sincronização de promoções: " + ex.Message);
+                System.Diagnostics.Debug.WriteLine("Erro Sincronização: " + ex.Message);
+            }
+        }
+
+        public async Task SincronizarPromocoesAsync()
+        {
+            string json = await _service.GetPromocoesAsync();
+            var response = JObject.Parse(json);
+            var promocoes = response["data"] as JArray;
+
+            using (var conn = new SQLiteConnection(_connectionString))
+            {
+                conn.Open();
+
+                using (var cmd = conn.CreateCommand())
+                {
+                    // Limpa promoções antigas
+                    cmd.CommandText = "DELETE FROM Promocoes";
+                    cmd.ExecuteNonQuery();
+                }
+
+                foreach (var promo in promocoes)
+                {
+                    using (var cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"
+                    INSERT INTO Promocoes (ID_Promocao, Descricao)
+                    VALUES (@id, @desc)";
+
+                        cmd.Parameters.AddWithValue("@id", promo["id"]?.ToObject<int>() ?? 0);
+                        cmd.Parameters.AddWithValue("@desc", promo["descricao"]?.ToString() ?? "");
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
             }
         }
 

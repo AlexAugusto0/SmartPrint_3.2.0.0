@@ -228,6 +228,7 @@ namespace EtiquetaFORNew
             {
                 throw new Exception($"Erro ao obter promoçõess: {ex.Message}", ex);
             }
+
         }
 
         /// <summary>
