@@ -33,6 +33,7 @@
             this.panelPrincipal = new System.Windows.Forms.Panel();
             this.panelConteudo = new System.Windows.Forms.Panel();
             this.groupBoxManual = new System.Windows.Forms.GroupBox();
+            this.txtDescricao = new System.Windows.Forms.TextBox();
             this.Calibrar = new System.Windows.Forms.Button();
             this.lblSelecione = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
@@ -43,6 +44,7 @@
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.lblTitulo = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.lblPassoPasso = new System.Windows.Forms.Label();
             this.panelPrincipal.SuspendLayout();
             this.panelConteudo.SuspendLayout();
             this.groupBoxManual.SuspendLayout();
@@ -77,6 +79,8 @@
             // 
             // groupBoxManual
             // 
+            this.groupBoxManual.Controls.Add(this.lblPassoPasso);
+            this.groupBoxManual.Controls.Add(this.txtDescricao);
             this.groupBoxManual.Controls.Add(this.Calibrar);
             this.groupBoxManual.Controls.Add(this.lblSelecione);
             this.groupBoxManual.Controls.Add(this.comboBox1);
@@ -93,6 +97,17 @@
             this.groupBoxManual.TabStop = false;
             this.groupBoxManual.Text = "Selecione o Modelo da sua Etiquetadora:";
             this.groupBoxManual.Visible = false;
+            // 
+            // txtDescricao
+            // 
+            this.txtDescricao.BackColor = System.Drawing.Color.White;
+            this.txtDescricao.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtDescricao.Location = new System.Drawing.Point(463, 110);
+            this.txtDescricao.Multiline = true;
+            this.txtDescricao.Name = "txtDescricao";
+            this.txtDescricao.ReadOnly = true;
+            this.txtDescricao.Size = new System.Drawing.Size(321, 200);
+            this.txtDescricao.TabIndex = 5;
             // 
             // Calibrar
             // 
@@ -206,6 +221,15 @@
             this.lblTitulo.TabIndex = 0;
             this.lblTitulo.Text = "Calibração de Etiquetadoras";
             // 
+            // lblPassoPasso
+            // 
+            this.lblPassoPasso.AutoSize = true;
+            this.lblPassoPasso.Location = new System.Drawing.Point(459, 70);
+            this.lblPassoPasso.Name = "lblPassoPasso";
+            this.lblPassoPasso.Size = new System.Drawing.Size(109, 20);
+            this.lblPassoPasso.TabIndex = 6;
+            this.lblPassoPasso.Text = "Passo a Passo:";
+            // 
             // calibracao
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -246,5 +270,7 @@
         private System.Windows.Forms.Button Calibrar;
         private System.Windows.Forms.Button btndriver;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.TextBox txtDescricao;
+        private System.Windows.Forms.Label lblPassoPasso;
     }
 }

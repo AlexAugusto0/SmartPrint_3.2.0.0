@@ -18,6 +18,7 @@ public class CalibracaoInfo
     public string YoutubeUrl { get; set; }
 
     public string ComandoCalibracao { get; set; }
+    public string Descricao { get; set; }
 
     /// <summary>
     /// Método para obter a imagem da calibração a partir dos recursos ou arquivos

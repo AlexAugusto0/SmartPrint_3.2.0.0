@@ -68,6 +68,8 @@ namespace EtiquetaFORNew.Forms
 
                 // Dica: Configure o SizeMode no Designer para Zoom para não distorcer
                 pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+
+                txtDescricao.Text = selecionado.Descricao;
             }
         }
 
