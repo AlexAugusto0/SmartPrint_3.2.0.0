@@ -50,11 +50,31 @@ namespace EtiquetaFORNew
         {
             if (_config.SoftcomShop.DataSync != null && !string.IsNullOrEmpty(_config.SoftcomShop.DataSync))
             {
-                lblUltimaSinc.Text = $"última sincronização: {_config.SoftcomShop.DataSync}";
+                string dataFormatada = FormatarDataUnix(_config.SoftcomShop.DataSync);
+                lblUltimaSinc.Text = $"última sincronização: {dataFormatada}";
             }
             else
             {
                 lblUltimaSinc.Text = "Nenhuma sincronização realizada";
+            }
+        }
+        private string FormatarDataUnix(string unixTimeStamp)
+        {
+            try
+            {
+                if (double.TryParse(unixTimeStamp, out double seconds))
+                {
+                    // Converte segundos para DateTime (UTC)
+                    DateTime data = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(seconds);
+
+                    // Converte para o horário local (Brasília) e formata
+                    return data.ToLocalTime().ToString("dd/MM/yyyy HH:mm");
+                }
+                return unixTimeStamp; // Retorna o original se não for número
+            }
+            catch
+            {
+                return "Data inválida";
             }
         }
 
