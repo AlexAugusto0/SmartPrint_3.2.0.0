@@ -253,7 +253,7 @@ namespace EtiquetaFORNew.Data
                     conn.Open();
 
                     // Busca as promoções reais que você sincronizou da Web
-                    string sql = "SELECT ID_Promocao, Descricao FROM Promocoes ORDER BY Descricao";
+                    string sql = "SELECT ID_Promocao, Descricao FROM Promocoes WHERE Status = 'Vigente' ORDER BY Descricao";
 
                     using (var cmd = new System.Data.SQLite.SQLiteCommand(sql, conn))
                     {

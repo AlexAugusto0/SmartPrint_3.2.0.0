@@ -2685,11 +2685,11 @@ namespace EtiquetaFORNew
                         //}
 
                         catch (Exception exRow)
-                        {
-                            erros++;
-                            // Isso vai te mostrar exatamente qual coluna o C# não encontrou:
-                            MessageBox.Show($"Coluna faltando: {exRow.Message}");
-                        }
+{
+    erros++;
+    // Isso vai te mostrar exatamente qual coluna o C# não encontrou:
+    MessageBox.Show($"Coluna faltando: {exRow.Message}"); 
+}
                     }
 
                     Cursor = Cursors.Default;
@@ -3488,20 +3488,78 @@ namespace EtiquetaFORNew
         //}
 
 
+        //private async void btnSincronizar_Click(object sender, EventArgs e)
+        //{
+        //    try
+        //    {
+        //        // 1. DETECTAR MODO DE OPERAÇÃO
+        //        ConfiguracaoSistema config = ConfiguracaoSistema.Carregar();
+        //        bool isSoftcomShop = config.TipoConexaoAtiva == TipoConexao.SoftcomShop;
+
+        //        // 2. MENSAGEM PERSONALIZADA
+        //        string mensagem = isSoftcomShop
+        //            ? "Deseja sincronizar os produtos e promoções do SoftcomShop?"
+        //            : "Deseja sincronizar as mercadorias do SQL Server?";
+
+        //        if (MessageBox.Show(mensagem, "Confirmar Sincronização",
+        //            MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+        //        {
+        //            return;
+        //        }
+
+        //        btnSincronizar.Enabled = false;
+        //        int total = 0;
+
+        //        if (isSoftcomShop)
+        //        {
+        //            // MODO SOFTCOMSHOP: Abre o form que gerencia a API
+        //            using (var formSync = new FormSincronizacaoSoftcomShop())
+        //            {
+        //                // O FormSincronizacaoSoftcomShop deve chamar internamente:
+        //                // 1. SincronizarProdutosAsync
+        //                // 2. SincronizarPromocoesAtivasAsync
+        //                if (formSync.ShowDialog() != DialogResult.OK)
+        //                {
+        //                    btnSincronizar.Enabled = true;
+        //                    return;
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            // MODO SQL SERVER
+        //            Cursor = Cursors.WaitCursor;
+        //            total = LocalDatabaseManager.SincronizarMercadorias();
+        //            Cursor = Cursors.Default;
+        //        }
+
+        //        // 3. RECARREGAMENTO FORÇADO DA INTERFACE (Promoções e Produtos)
+        //        LimparErecarregarInterface();
+
+        //        MessageBox.Show(isSoftcomShop
+        //            ? "Sincronização SoftcomShop (Produtos e Promoções) concluída!"
+        //            : $"Sincronização SQL Server concluída! Total: {total}",
+        //            "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show($"Erro: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //    }
+        //    finally
+        //    {
+        //        btnSincronizar.Enabled = true;
+        //        Cursor = Cursors.Default;
+        //    }
+        //}
+
         private async void btnSincronizar_Click(object sender, EventArgs e)
         {
             try
             {
-                // 1. DETECTAR MODO DE OPERAÇÃO
                 ConfiguracaoSistema config = ConfiguracaoSistema.Carregar();
                 bool isSoftcomShop = config.TipoConexaoAtiva == TipoConexao.SoftcomShop;
 
-                // 2. MENSAGEM PERSONALIZADA
-                string mensagem = isSoftcomShop
-                    ? "Deseja sincronizar os produtos e promoções do SoftcomShop?"
-                    : "Deseja sincronizar as mercadorias do SQL Server?";
-
-                if (MessageBox.Show(mensagem, "Confirmar Sincronização",
+                if (MessageBox.Show("Deseja iniciar a sincronização de dados?", "Confirmar",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 {
                     return;
@@ -3512,17 +3570,19 @@ namespace EtiquetaFORNew
 
                 if (isSoftcomShop)
                 {
-                    // MODO SOFTCOMSHOP: Abre o form que gerencia a API
                     using (var formSync = new FormSincronizacaoSoftcomShop())
                     {
-                        // O FormSincronizacaoSoftcomShop deve chamar internamente:
-                        // 1. SincronizarProdutosAsync
-                        // 2. SincronizarPromocoesAtivasAsync
+                        // Se o retorno for OK, significa que o form interno já mostrou o sucesso
                         if (formSync.ShowDialog() != DialogResult.OK)
                         {
-                            btnSincronizar.Enabled = true;
                             return;
                         }
+
+                        // ⭐ RETORNO IMEDIATO: 
+                        // Como o FormSincronizacaoSoftcomShop já exibe sua própria mensagem de conclusão,
+                        // encerramos o método aqui após recarregar a tela para evitar a segunda MessageBox.
+                        LimparErecarregarInterface();
+                        return;
                     }
                 }
                 else
@@ -3533,17 +3593,16 @@ namespace EtiquetaFORNew
                     Cursor = Cursors.Default;
                 }
 
-                // 3. RECARREGAMENTO FORÇADO DA INTERFACE (Promoções e Produtos)
+                // 3. ATUALIZAR INTERFACE (Para SQL Server)
                 LimparErecarregarInterface();
 
-                MessageBox.Show(isSoftcomShop
-                    ? "Sincronização SoftcomShop (Produtos e Promoções) concluída!"
-                    : $"Sincronização SQL Server concluída! Total: {total}",
+                // 4. MENSAGEM FINAL (Apenas para SQL Server)
+                MessageBox.Show($"Sincronização concluída! Total: {total} produtos.",
                     "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Erro na sincronização: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -3551,6 +3610,7 @@ namespace EtiquetaFORNew
                 Cursor = Cursors.Default;
             }
         }
+
 
         // Método auxiliar para evitar repetição de código de limpeza
         private void LimparErecarregarInterface()

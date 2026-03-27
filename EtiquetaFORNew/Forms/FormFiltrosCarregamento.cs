@@ -114,7 +114,7 @@ namespace EtiquetaFORNew
             lblFornecedor = CriarLabel("Fornecedor:", 10, 135);
             cmbFornecedor = CriarComboBox(180, 130);
 
-            // â­ PROMOÇÃƒO
+            //  PROMOÇÃO
             lblPromocao = CriarLabel("Promoção:", 10, 175);
             cmbPromocao = CriarComboBox(180, 170);
             cmbPromocao.DisplayMember = "Descricao";
@@ -463,7 +463,7 @@ namespace EtiquetaFORNew
                     break;
 
                 case "PROMOÇÕES":
-                    // à­ Mostrar combo de promoçções e carregar promoçõess ativas
+                    // à­ Mostrar combo de promoções e carregar promoções ativas
                     lblPromocao.Visible = true;
                     cmbPromocao.Visible = true;
                     CarregarPromocoesAtivas();
