@@ -350,6 +350,7 @@ namespace EtiquetaFORNew.Data
             FROM [memoria_MercadoriasLojas]
             WHERE [Loja] = '" + loja + @"'
             " + (string.IsNullOrEmpty(filtro) ? "" : "AND " + filtro) + @"
+                and [Desativado] = 0
             ORDER BY [Código da Mercadoria]
         ";
 
