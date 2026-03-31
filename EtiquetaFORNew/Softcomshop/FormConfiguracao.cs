@@ -289,6 +289,8 @@ namespace EtiquetaFORNew
             }
         }
 
+
+
         private void CarregarConfigFormSql()
         {
             if (_configFormSql != null)

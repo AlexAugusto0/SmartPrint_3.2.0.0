@@ -89,7 +89,7 @@ namespace EtiquetaFORNew
             this.groupBox1.Controls.Add(this.txtServidor);
             this.groupBox1.Controls.Add(this.lblServidor);
             this.groupBox1.Controls.Add(this.btnTestar);
-            this.groupBox1.Location = new System.Drawing.Point(12, 94);
+            this.groupBox1.Location = new System.Drawing.Point(16, 82);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(630, 246);
             this.groupBox1.TabIndex = 7;
@@ -247,7 +247,7 @@ namespace EtiquetaFORNew
             // 
             // btnSalvar
             // 
-            this.btnSalvar.Location = new System.Drawing.Point(375, 405);
+            this.btnSalvar.Location = new System.Drawing.Point(379, 393);
             this.btnSalvar.Name = "btnSalvar";
             this.btnSalvar.Size = new System.Drawing.Size(100, 30);
             this.btnSalvar.TabIndex = 4;
@@ -258,7 +258,7 @@ namespace EtiquetaFORNew
             // 
             // btnCancelar
             // 
-            this.btnCancelar.Location = new System.Drawing.Point(482, 405);
+            this.btnCancelar.Location = new System.Drawing.Point(486, 393);
             this.btnCancelar.Name = "btnCancelar";
             this.btnCancelar.Size = new System.Drawing.Size(100, 30);
             this.btnCancelar.TabIndex = 5;
@@ -280,7 +280,7 @@ namespace EtiquetaFORNew
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.cmbLoja);
-            this.groupBox2.Location = new System.Drawing.Point(12, 357);
+            this.groupBox2.Location = new System.Drawing.Point(16, 345);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(630, 42);
             this.groupBox2.TabIndex = 19;
@@ -302,7 +302,7 @@ namespace EtiquetaFORNew
             // 
             this.txtCaminhoFront.BackColor = System.Drawing.Color.White;
             this.txtCaminhoFront.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtCaminhoFront.Location = new System.Drawing.Point(150, 58);
+            this.txtCaminhoFront.Location = new System.Drawing.Point(153, 44);
             this.txtCaminhoFront.Name = "txtCaminhoFront";
             this.txtCaminhoFront.Size = new System.Drawing.Size(416, 20);
             this.txtCaminhoFront.TabIndex = 22;
@@ -311,7 +311,7 @@ namespace EtiquetaFORNew
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(20, 61);
+            this.label1.Location = new System.Drawing.Point(23, 47);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(124, 15);
             this.label1.TabIndex = 21;
@@ -319,7 +319,7 @@ namespace EtiquetaFORNew
             // 
             // btnSelecionarFront
             // 
-            this.btnSelecionarFront.Location = new System.Drawing.Point(575, 58);
+            this.btnSelecionarFront.Location = new System.Drawing.Point(578, 44);
             this.btnSelecionarFront.Name = "btnSelecionarFront";
             this.btnSelecionarFront.Size = new System.Drawing.Size(25, 20);
             this.btnSelecionarFront.TabIndex = 23;
@@ -331,7 +331,7 @@ namespace EtiquetaFORNew
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(662, 447);
+            this.ClientSize = new System.Drawing.Size(662, 434);
             this.Controls.Add(this.btnSelecionarFront);
             this.Controls.Add(this.txtCaminhoFront);
             this.Controls.Add(this.groupBox2);
