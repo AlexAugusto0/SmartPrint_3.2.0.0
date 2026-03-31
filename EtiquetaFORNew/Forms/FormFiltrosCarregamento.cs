@@ -639,6 +639,8 @@ namespace EtiquetaFORNew
                     cmbGrupo.Enabled = false;
                     cmbFabricante.Enabled = false;
                     cmbFornecedor.Enabled = false;
+                    chkUsarFiltroData.Visible = false;
+                    chkUsarFiltroData.Checked = false;
 
                     lblDocumento.Text = "Número da NF:";
                     lblDocumento.Visible = true;
