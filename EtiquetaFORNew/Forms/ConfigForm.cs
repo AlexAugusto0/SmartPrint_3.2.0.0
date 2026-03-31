@@ -1,6 +1,7 @@
 using EtiquetaFORNew.Data;
 using System;
 using System.Collections.Generic;
+using System.Data.OleDb;
 using System.Windows.Forms;
 
 namespace EtiquetaFORNew
@@ -128,7 +129,7 @@ namespace EtiquetaFORNew
             }
             catch
             {
-                // Se nÃ£o conseguir parsear, deixa os campos vazios
+                // Se não conseguir parsear, deixa os campos vazios
             }
         }
 
@@ -523,5 +524,69 @@ namespace EtiquetaFORNew
             }
         }
 
+        private void btnSelecionarFront_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Access Database (*.mdb;*.accdb)|*.mdb;*.accdb";
+                ofd.Title = "Selecione o Front-end do Sistema";
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    txtCaminhoFront.Text = ofd.FileName; // Um TextBox para mostrar o caminho
+                    ImportarConfiguracaoAccess(ofd.FileName);
+                }
+            }
+        }
+        private void ImportarConfiguracaoAccess(string caminhoArquivo)
+        {
+            // String de conexão para arquivos .mdb ou .accdb
+            // Se o seu sistema for 32 bits use Microsoft.Jet.OLEDB.4.0; 
+            // Para 64 bits ou .accdb use Microsoft.ACE.OLEDB.12.0;
+            // Adicionado "Mode=Share Deny None" para evitar conflitos de bloqueio
+            string connStringAccess = $@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={caminhoArquivo};Mode=Share Deny None;Persist Security Info=False;";
+
+            try
+            {
+                using (OleDbConnection conn = new OleDbConnection(connStringAccess))
+                {
+                    conn.Open();
+                    // Pegamos o registro onde BancoSQL está marcado (conforme sua imagem)
+                    string query = "SELECT TOP 1 SqlServidor, SqlPorta, SqlBase, SqlLogin, SqlSenha FROM seguranca WHERE BancoSQL = True";
+
+                    using (OleDbCommand cmd = new OleDbCommand(query, conn))
+                    {
+                        using (OleDbDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                // Preenche os campos do seu formulário C#
+                                txtServidor.Text = reader["SqlServidor"].ToString();
+                                txtPorta.Text = reader["SqlPorta"].ToString();
+                                cmbBancoDados.Text = reader["SqlBase"].ToString();
+                                txtUsuario.Text = reader["SqlLogin"].ToString();
+
+                                // A senha no Access costuma estar criptografada ou mascarada. 
+                                // Se estiver em texto puro, o código abaixo funciona:
+                                txtSenha.Text = reader["SqlSenha"].ToString();
+
+                                MessageBox.Show("Configurações importadas do Access com sucesso!", "Importação", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                                // Opcional: Acionar o botão de listar bancos ou testar conexão automaticamente
+                                // btnListarBancos.PerformClick();
+                            }
+                            else
+                            {
+                                MessageBox.Show("Nenhuma configuração ativa encontrada na tabela 'seguranca'.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao ler o arquivo Access: " + ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }

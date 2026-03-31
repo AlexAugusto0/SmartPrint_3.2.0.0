@@ -52,6 +52,9 @@ namespace EtiquetaFORNew
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.cmbLoja = new System.Windows.Forms.ComboBox();
+            this.txtCaminhoFront = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.btnSelecionarFront = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -86,7 +89,7 @@ namespace EtiquetaFORNew
             this.groupBox1.Controls.Add(this.txtServidor);
             this.groupBox1.Controls.Add(this.lblServidor);
             this.groupBox1.Controls.Add(this.btnTestar);
-            this.groupBox1.Location = new System.Drawing.Point(12, 32);
+            this.groupBox1.Location = new System.Drawing.Point(12, 94);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(630, 246);
             this.groupBox1.TabIndex = 7;
@@ -244,7 +247,7 @@ namespace EtiquetaFORNew
             // 
             // btnSalvar
             // 
-            this.btnSalvar.Location = new System.Drawing.Point(375, 343);
+            this.btnSalvar.Location = new System.Drawing.Point(375, 405);
             this.btnSalvar.Name = "btnSalvar";
             this.btnSalvar.Size = new System.Drawing.Size(100, 30);
             this.btnSalvar.TabIndex = 4;
@@ -255,7 +258,7 @@ namespace EtiquetaFORNew
             // 
             // btnCancelar
             // 
-            this.btnCancelar.Location = new System.Drawing.Point(482, 343);
+            this.btnCancelar.Location = new System.Drawing.Point(482, 405);
             this.btnCancelar.Name = "btnCancelar";
             this.btnCancelar.Size = new System.Drawing.Size(100, 30);
             this.btnCancelar.TabIndex = 5;
@@ -277,7 +280,7 @@ namespace EtiquetaFORNew
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.cmbLoja);
-            this.groupBox2.Location = new System.Drawing.Point(12, 295);
+            this.groupBox2.Location = new System.Drawing.Point(12, 357);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(630, 42);
             this.groupBox2.TabIndex = 19;
@@ -295,12 +298,44 @@ namespace EtiquetaFORNew
             this.cmbLoja.TabIndex = 19;
             this.cmbLoja.SelectedIndexChanged += new System.EventHandler(this.cmbLoja_SelectedIndexChanged);
             // 
+            // txtCaminhoFront
+            // 
+            this.txtCaminhoFront.BackColor = System.Drawing.Color.White;
+            this.txtCaminhoFront.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtCaminhoFront.Location = new System.Drawing.Point(150, 58);
+            this.txtCaminhoFront.Name = "txtCaminhoFront";
+            this.txtCaminhoFront.Size = new System.Drawing.Size(416, 20);
+            this.txtCaminhoFront.TabIndex = 22;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
+            this.label1.Location = new System.Drawing.Point(20, 61);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(124, 15);
+            this.label1.TabIndex = 21;
+            this.label1.Text = "Selecione o Front:";
+            // 
+            // btnSelecionarFront
+            // 
+            this.btnSelecionarFront.Location = new System.Drawing.Point(575, 58);
+            this.btnSelecionarFront.Name = "btnSelecionarFront";
+            this.btnSelecionarFront.Size = new System.Drawing.Size(25, 20);
+            this.btnSelecionarFront.TabIndex = 23;
+            this.btnSelecionarFront.Text = "...";
+            this.btnSelecionarFront.UseVisualStyleBackColor = true;
+            this.btnSelecionarFront.Click += new System.EventHandler(this.btnSelecionarFront_Click);
+            // 
             // ConfigForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(662, 375);
+            this.ClientSize = new System.Drawing.Size(662, 447);
+            this.Controls.Add(this.btnSelecionarFront);
+            this.Controls.Add(this.txtCaminhoFront);
             this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnCancelar);
             this.Controls.Add(this.btnSalvar);
@@ -347,5 +382,8 @@ namespace EtiquetaFORNew
         private System.Windows.Forms.Label lblModuloApp;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.ComboBox cmbLoja;
+        private System.Windows.Forms.TextBox txtCaminhoFront;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btnSelecionarFront;
     }
 }
