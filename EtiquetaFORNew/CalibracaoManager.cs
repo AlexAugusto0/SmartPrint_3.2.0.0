@@ -16,7 +16,6 @@ public class CalibracaoInfo
 
     [JsonProperty("youtubeUrl")]
     public string YoutubeUrl { get; set; }
-
     public string ComandoCalibracao { get; set; }
     public string Descricao { get; set; }
 

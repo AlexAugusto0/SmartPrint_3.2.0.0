@@ -9,9 +9,9 @@ using EtiquetaFORNew.Data;
 namespace EtiquetaFORNew
 {
     /// <summary>
-    /// FormulÃ¡rio SIMPLIFICADO de carregamento - COM SUPORTE A PROMOÇÕES
+    /// Formulário SIMPLIFICADO de carregamento - COM SUPORTE A PROMOÇÕES
     /// Funciona imediatamente sem precisar alterar o banco
-    /// VersÃ£o 2.3 - PromoÃ§Ãµes Ativas
+    /// Versão 2.3 - Promoçõess Ativas
     /// </summary>
     public partial class FormFiltrosCarregamento : Form
     {
@@ -21,7 +21,7 @@ namespace EtiquetaFORNew
         private ComboBox cmbFabricante;
         private ComboBox cmbFornecedor;
         private ComboBox cmbEmpresa;
-        private ComboBox cmbPromocao; // â­ NOVO
+        private ComboBox cmbPromocao; // ­ NOVO
         private TextBox txtDocumento;
         private DateTimePicker dtpDataInicial;
         private DateTimePicker dtpDataFinal;
@@ -35,7 +35,7 @@ namespace EtiquetaFORNew
         private Label lblFabricante;
         private Label lblFornecedor;
         private Label lblEmpresa;
-        private Label lblPromocao; // â­ NOVO
+        private Label lblPromocao; //  NOVO
         private Label lblDocumento;
         private Label lblDataInicial;
         private Label lblDataFinal;
@@ -66,6 +66,186 @@ namespace EtiquetaFORNew
             AplicarPermissoesFiltros();
 
         }
+
+        //private void InitializeComponent()
+        //{
+        //    this.SuspendLayout();
+
+        //    this.ClientSize = new System.Drawing.Size(500, 540);
+        //    this.FormBorderStyle = FormBorderStyle.FixedDialog;
+        //    this.MaximizeBox = false;
+        //    this.MinimizeBox = false;
+        //    this.StartPosition = FormStartPosition.CenterParent;
+        //    this.Text = "SmartPrint - Carregamento de Produtos";
+        //    this.BackColor = Color.FromArgb(245, 245, 245);
+
+        //    lblTitulo = new Label
+        //    {
+        //        Text = "CARREGAR PRODUTOS",
+        //        Location = new Point(0, 0),
+        //        Size = new Size(500, 50),
+        //        TextAlign = ContentAlignment.MiddleCenter,
+        //        Font = new Font("Segoe UI", 14F, FontStyle.Bold),
+        //        BackColor = Color.FromArgb(255, 165, 0),
+        //        ForeColor = Color.White
+        //    };
+
+        //    panelFiltros = new Panel
+        //    {
+        //        Location = new Point(10, 60),
+        //        Size = new Size(480, 400),
+        //        BackColor = Color.White,
+        //        BorderStyle = BorderStyle.FixedSingle
+        //    };
+
+        //    // TIPO
+        //    lblTipo = CriarLabel("Tipo de Carregamento:", 10, 15);
+        //    cmbTipo = CriarComboBox(180, 10);
+        //    cmbTipo.KeyDown += Control_KeyDown_EnterParaCarregar;
+
+        //    // GRUPO
+        //    lblGrupo = CriarLabel("Grupo:", 10, 55);
+        //    cmbGrupo = CriarComboBox(180, 50);
+        //    cmbTipo.KeyDown += Control_KeyDown_EnterParaCarregar;
+
+        //    // FABRICANTE
+        //    lblFabricante = CriarLabel("Fabricante:", 10, 95);
+        //    cmbFabricante = CriarComboBox(180, 90);
+        //    cmbTipo.KeyDown += Control_KeyDown_EnterParaCarregar;
+
+        //    // FORNECEDOR
+        //    lblFornecedor = CriarLabel("Fornecedor:", 10, 135);
+        //    cmbFornecedor = CriarComboBox(180, 130);
+        //    cmbTipo.KeyDown += Control_KeyDown_EnterParaCarregar;
+
+        //    //  PROMOÇÃO
+        //    lblPromocao = CriarLabel("Promoção:", 10, 175);
+        //    cmbPromocao = CriarComboBox(180, 170);
+        //    cmbPromocao.DisplayMember = "Descricao";
+        //    cmbPromocao.ValueMember = "ID_Promocao";
+        //    lblPromocao.Visible = false;
+        //    cmbPromocao.Visible = false;
+        //    cmbTipo.KeyDown += Control_KeyDown_EnterParaCarregar;
+
+        //    // DOCUMENTO
+        //    lblDocumento = CriarLabel("Documento/NF:", 10, 215);
+        //    txtDocumento = new TextBox
+        //    {
+        //        Location = new Point(180, 210),
+        //        Size = new Size(280, 25),
+        //        Font = new Font("Segoe UI", 9F)
+        //    };
+        //    cmbTipo.KeyDown += Control_KeyDown_EnterParaCarregar;
+        //    lblDocumento.Visible = false;
+        //    txtDocumento.Visible = false;
+
+        //    // FILTRO DE DATA
+        //    chkUsarFiltroData = new CheckBox
+        //    {
+        //        Text = "Filtrar por Data",
+        //        Location = new Point(10, 255),
+        //        Size = new Size(150, 25),
+        //        Font = new Font("Segoe UI", 9F)
+        //    };
+        //    chkUsarFiltroData.CheckedChanged += ChkUsarFiltroData_CheckedChanged;
+
+        //    // DATA INICIAL
+        //    lblDataInicial = CriarLabel("Data Inicial:", 10, 295);
+        //    dtpDataInicial = new DateTimePicker
+        //    {
+        //        Location = new Point(180, 290),
+        //        Size = new Size(280, 25),
+        //        Font = new Font("Segoe UI", 9F),
+        //        Format = DateTimePickerFormat.Short,
+        //        Enabled = false
+        //    };
+
+        //    // DATA FINAL
+        //    lblDataFinal = CriarLabel("Data Final:", 10, 335);
+        //    dtpDataFinal = new DateTimePicker
+        //    {
+        //        Location = new Point(180, 330),
+        //        Size = new Size(280, 25),
+        //        Font = new Font("Segoe UI", 9F),
+        //        Format = DateTimePickerFormat.Short,
+        //        Enabled = false
+        //    };
+
+        //    // EMPRESA
+        //    lblEmpresa = CriarLabel("Empresa:", 10, 375);
+        //    cmbEmpresa = CriarComboBox(180, 370);
+        //    cmbTipo.KeyDown += Control_KeyDown_EnterParaCarregar;
+
+        //    panelFiltros.Controls.Add(lblTipo);
+        //    panelFiltros.Controls.Add(cmbTipo);
+        //    panelFiltros.Controls.Add(lblGrupo);
+        //    panelFiltros.Controls.Add(cmbGrupo);
+        //    panelFiltros.Controls.Add(lblFabricante);
+        //    panelFiltros.Controls.Add(cmbFabricante);
+        //    panelFiltros.Controls.Add(lblFornecedor);
+        //    panelFiltros.Controls.Add(cmbFornecedor);
+        //    panelFiltros.Controls.Add(lblPromocao); // â­ NOVO
+        //    panelFiltros.Controls.Add(cmbPromocao); // â­ NOVO
+        //    panelFiltros.Controls.Add(lblDocumento);
+        //    panelFiltros.Controls.Add(txtDocumento);
+        //    panelFiltros.Controls.Add(chkUsarFiltroData);
+        //    panelFiltros.Controls.Add(lblDataInicial);
+        //    panelFiltros.Controls.Add(dtpDataInicial);
+        //    panelFiltros.Controls.Add(lblDataFinal);
+        //    panelFiltros.Controls.Add(dtpDataFinal);
+        //    panelFiltros.Controls.Add(lblEmpresa);
+        //    panelFiltros.Controls.Add(cmbEmpresa);
+
+        //    btnLimparFiltros = new Button
+        //    {
+        //        Text = "Limpar",
+        //        Location = new Point(30, 475),
+        //        Size = new Size(100, 45),
+        //        BackColor = Color.FromArgb(108, 117, 125),
+        //        ForeColor = Color.White,
+        //        FlatStyle = FlatStyle.Flat,
+        //        Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+        //        Cursor = Cursors.Hand
+        //    };
+        //    btnLimparFiltros.FlatAppearance.BorderSize = 0;
+        //    btnLimparFiltros.Click += BtnLimparFiltros_Click;
+
+        //    btnCancelar = new Button
+        //    {
+        //        Text = "Cancelar",
+        //        Location = new Point(150, 475),
+        //        Size = new Size(130, 45),
+        //        BackColor = Color.FromArgb(220, 53, 69),
+        //        ForeColor = Color.White,
+        //        FlatStyle = FlatStyle.Flat,
+        //        Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+        //        Cursor = Cursors.Hand
+        //    };
+        //    btnCancelar.FlatAppearance.BorderSize = 0;
+        //    btnCancelar.Click += BtnCancelar_Click;
+
+        //    btnConfirmar = new Button
+        //    {
+        //        Text = "Carregar",
+        //        Location = new Point(300, 475),
+        //        Size = new Size(170, 45),
+        //        BackColor = Color.FromArgb(40, 167, 69),
+        //        ForeColor = Color.White,
+        //        FlatStyle = FlatStyle.Flat,
+        //        Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+        //        Cursor = Cursors.Hand
+        //    };
+        //    btnConfirmar.FlatAppearance.BorderSize = 0;
+        //    btnConfirmar.Click += BtnConfirmar_Click;
+
+        //    this.Controls.Add(lblTitulo);
+        //    this.Controls.Add(panelFiltros);
+        //    this.Controls.Add(btnLimparFiltros);
+        //    this.Controls.Add(btnCancelar);
+        //    this.Controls.Add(btnConfirmar);
+
+        //    this.ResumeLayout(false);
+        //}
 
         private void InitializeComponent()
         {
@@ -101,26 +281,31 @@ namespace EtiquetaFORNew
             // TIPO
             lblTipo = CriarLabel("Tipo de Carregamento:", 10, 15);
             cmbTipo = CriarComboBox(180, 10);
+            cmbTipo.KeyDown += Control_KeyDown_EnterParaCarregar;
 
             // GRUPO
             lblGrupo = CriarLabel("Grupo:", 10, 55);
             cmbGrupo = CriarComboBox(180, 50);
+            cmbGrupo.KeyDown += Control_KeyDown_EnterParaCarregar; // Corrigido
 
             // FABRICANTE
             lblFabricante = CriarLabel("Fabricante:", 10, 95);
             cmbFabricante = CriarComboBox(180, 90);
+            cmbFabricante.KeyDown += Control_KeyDown_EnterParaCarregar; // Corrigido
 
             // FORNECEDOR
             lblFornecedor = CriarLabel("Fornecedor:", 10, 135);
             cmbFornecedor = CriarComboBox(180, 130);
+            cmbFornecedor.KeyDown += Control_KeyDown_EnterParaCarregar; // Corrigido
 
-            //  PROMOÇÃO
+            // PROMOÇÃO
             lblPromocao = CriarLabel("Promoção:", 10, 175);
             cmbPromocao = CriarComboBox(180, 170);
             cmbPromocao.DisplayMember = "Descricao";
             cmbPromocao.ValueMember = "ID_Promocao";
             lblPromocao.Visible = false;
             cmbPromocao.Visible = false;
+            cmbPromocao.KeyDown += Control_KeyDown_EnterParaCarregar; // Corrigido
 
             // DOCUMENTO
             lblDocumento = CriarLabel("Documento/NF:", 10, 215);
@@ -130,6 +315,7 @@ namespace EtiquetaFORNew
                 Size = new Size(280, 25),
                 Font = new Font("Segoe UI", 9F)
             };
+            txtDocumento.KeyDown += Control_KeyDown_EnterParaCarregar; // Corrigido
             lblDocumento.Visible = false;
             txtDocumento.Visible = false;
 
@@ -168,6 +354,7 @@ namespace EtiquetaFORNew
             // EMPRESA
             lblEmpresa = CriarLabel("Empresa:", 10, 375);
             cmbEmpresa = CriarComboBox(180, 370);
+            cmbEmpresa.KeyDown += Control_KeyDown_EnterParaCarregar; // Corrigido
 
             panelFiltros.Controls.Add(lblTipo);
             panelFiltros.Controls.Add(cmbTipo);
@@ -177,8 +364,8 @@ namespace EtiquetaFORNew
             panelFiltros.Controls.Add(cmbFabricante);
             panelFiltros.Controls.Add(lblFornecedor);
             panelFiltros.Controls.Add(cmbFornecedor);
-            panelFiltros.Controls.Add(lblPromocao); // â­ NOVO
-            panelFiltros.Controls.Add(cmbPromocao); // â­ NOVO
+            panelFiltros.Controls.Add(lblPromocao);
+            panelFiltros.Controls.Add(cmbPromocao);
             panelFiltros.Controls.Add(lblDocumento);
             panelFiltros.Controls.Add(txtDocumento);
             panelFiltros.Controls.Add(chkUsarFiltroData);
@@ -200,7 +387,6 @@ namespace EtiquetaFORNew
                 Font = new Font("Segoe UI", 10F, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
-            btnLimparFiltros.FlatAppearance.BorderSize = 0;
             btnLimparFiltros.Click += BtnLimparFiltros_Click;
 
             btnCancelar = new Button
@@ -214,7 +400,6 @@ namespace EtiquetaFORNew
                 Font = new Font("Segoe UI", 10F, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
-            btnCancelar.FlatAppearance.BorderSize = 0;
             btnCancelar.Click += BtnCancelar_Click;
 
             btnConfirmar = new Button
@@ -228,7 +413,6 @@ namespace EtiquetaFORNew
                 Font = new Font("Segoe UI", 10F, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
-            btnConfirmar.FlatAppearance.BorderSize = 0;
             btnConfirmar.Click += BtnConfirmar_Click;
 
             this.Controls.Add(lblTitulo);
@@ -236,6 +420,10 @@ namespace EtiquetaFORNew
             this.Controls.Add(btnLimparFiltros);
             this.Controls.Add(btnCancelar);
             this.Controls.Add(btnConfirmar);
+
+            // Define o botão padrão do formulário (ENTER aciona ele em qualquer lugar)
+            this.AcceptButton = btnConfirmar;
+            this.CancelButton = btnCancelar;
 
             this.ResumeLayout(false);
         }
@@ -610,7 +798,7 @@ namespace EtiquetaFORNew
                         }
                     }
 
-                    // Para filtros manuais, pelo menos um filtro Ã© obrigatÃ³rio
+                    // Para filtros manuais, pelo menos um filtro não obrigatório
                     if (tipoSelecionado == "FILTROS MANUAIS" &&
                         string.IsNullOrEmpty(cmbGrupo.Text) &&
                         string.IsNullOrEmpty(cmbFabricante.Text) &&
@@ -650,6 +838,18 @@ namespace EtiquetaFORNew
 
             this.DialogResult = DialogResult.OK;
             this.Close();
+        }
+
+        private void Control_KeyDown_EnterParaCarregar(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                // Impede o som de "bing" do Windows ao apertar Enter em controles simples
+                e.SuppressKeyPress = true;
+
+                // Aciona o clique do botão confirmar
+                btnConfirmar.PerformClick();
+            }
         }
     }
 }

@@ -23,6 +23,9 @@ namespace EtiquetaFORNew
         // ⭐ NOVO: O objeto responsável pela impressão
         private PrintDocument printDocument1;
 
+        private float zoomEscala = 1.0f; // Escala base (1.0 = 100%)
+        private const float FATOR_ZOOM = 1.2f; // Multiplicador de zoom
+
         // =================================================================
         // ⭐ NOVO MÉTODO DE CONVERSÃO - CRÍTICO PARA IMPRESSÃO CORRETA
         // =================================================================
@@ -52,6 +55,9 @@ namespace EtiquetaFORNew
 
             this.Shown += FormImpressao_Shown;
             this.Resize += (sender, e) => DesenharVisualizacao();
+            panelVisualizacao.AutoScroll = true;
+            panelVisualizacao.GetType().GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).SetValue(panelVisualizacao, true, null);
+            this.MouseWheel += FormImpressao_MouseWheel;
         }
 
         private ConfiguracaoEtiqueta CriarConfiguracaoPadrao()
@@ -146,14 +152,67 @@ namespace EtiquetaFORNew
             lblInfo.Text = $"Página {paginaAtual + 1} de {produtosPorPagina.Count}";
         }
 
+        //private void DesenharVisualizacao()
+        //{
+        //    panelVisualizacao.Controls.Clear();
+
+        //    // Escala para visualização (pixels por mm)
+        //    float escala = 3.78f;
+
+        //    // Calcula dimensões totais da página
+        //    float larguraTotalMm = (configuracaoEtiqueta.NumColunas * template.Largura) +
+        //                           ((configuracaoEtiqueta.NumColunas - 1) * configuracaoEtiqueta.EspacamentoColunas) +
+        //                           configuracaoEtiqueta.MargemEsquerda + configuracaoEtiqueta.MargemDireita;
+
+        //    float alturaTotalMm = (configuracaoEtiqueta.NumLinhas * template.Altura) +
+        //                          ((configuracaoEtiqueta.NumLinhas - 1) * configuracaoEtiqueta.EspacamentoLinhas) +
+        //                          configuracaoEtiqueta.MargemSuperior + configuracaoEtiqueta.MargemInferior;
+
+        //    int larguraPagina = (int)(larguraTotalMm * escala);
+        //    int alturaPagina = (int)(alturaTotalMm * escala);
+
+        //    Bitmap bmp = new Bitmap(larguraPagina, alturaPagina);
+
+        //    using (Graphics g = Graphics.FromImage(bmp))
+        //    {
+        //        g.Clear(Color.White);
+        //        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+        //        g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+
+        //        DesenharPaginaEtiquetas(g, escala);
+        //    }
+        //    int xCentralizado = Math.Max(0, (panelVisualizacao.Width - bmp.Width) / 2);
+
+        //    // ⭐ NOVO: Centralização vertical
+        //    int yCentralizado = Math.Max(0, (panelVisualizacao.Height - bmp.Height) / 2);
+
+        //    // ... (PictureBox code)
+        //    PictureBox pic = new PictureBox
+        //    {
+        //        Image = bmp,
+        //        SizeMode = PictureBoxSizeMode.AutoSize,
+        //        Location = new Point(
+        //            //Math.Max(0, (panelVisualizacao.Width - bmp.Width) / 2),
+        //            //20
+        //            xCentralizado,
+        //            yCentralizado
+        //        )
+        //    };
+
+        //    panelVisualizacao.Controls.Add(pic);
+        //    AtualizarBotoes();
+        //}
+
         private void DesenharVisualizacao()
         {
             panelVisualizacao.Controls.Clear();
 
-            // Escala para visualização (pixels por mm)
-            float escala = 3.78f;
+            // Escala base (96 DPI aprox.) multiplicada pelo fator de Zoom definido pelo usuário
+            // zoomEscala deve ser uma variável global na classe (ex: private float zoomEscala = 1.0f;)
+            float escalaBase = 3.78f;
+            float escalaComZoom = escalaBase * zoomEscala;
 
-            // Calcula dimensões totais da página
+            // Calcula dimensões totais da página em milímetros
             float larguraTotalMm = (configuracaoEtiqueta.NumColunas * template.Largura) +
                                    ((configuracaoEtiqueta.NumColunas - 1) * configuracaoEtiqueta.EspacamentoColunas) +
                                    configuracaoEtiqueta.MargemEsquerda + configuracaoEtiqueta.MargemDireita;
@@ -162,40 +221,46 @@ namespace EtiquetaFORNew
                                   ((configuracaoEtiqueta.NumLinhas - 1) * configuracaoEtiqueta.EspacamentoLinhas) +
                                   configuracaoEtiqueta.MargemSuperior + configuracaoEtiqueta.MargemInferior;
 
-            int larguraPagina = (int)(larguraTotalMm * escala);
-            int alturaPagina = (int)(alturaTotalMm * escala);
+            // Converte MM para Pixels considerando o Zoom
+            int larguraPaginaPx = (int)Math.Ceiling(larguraTotalMm * escalaComZoom);
+            int alturaPaginaPx = (int)Math.Ceiling(alturaTotalMm * escalaComZoom);
 
-            Bitmap bmp = new Bitmap(larguraPagina, alturaPagina);
+            // Cria o bitmap com a nova resolução
+            Bitmap bmp = new Bitmap(larguraPaginaPx, alturaPaginaPx);
 
             using (Graphics g = Graphics.FromImage(bmp))
             {
                 g.Clear(Color.White);
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+                // Configurações de alta qualidade para visualização e bipagem
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
                 g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
 
-                DesenharPaginaEtiquetas(g, escala);
+                // Desenha as etiquetas usando a escala com zoom
+                DesenharPaginaEtiquetas(g, escalaComZoom);
             }
-            int xCentralizado = Math.Max(0, (panelVisualizacao.Width - bmp.Width) / 2);
 
-            // ⭐ NOVO: Centralização vertical
-            int yCentralizado = Math.Max(0, (panelVisualizacao.Height - bmp.Height) / 2);
+            // Centralização lógica
+            int xPos = Math.Max(0, (panelVisualizacao.Width - bmp.Width) / 2);
+            int yPos = Math.Max(0, (panelVisualizacao.Height - bmp.Height) / 2);
 
-            // ... (PictureBox code)
             PictureBox pic = new PictureBox
             {
                 Image = bmp,
                 SizeMode = PictureBoxSizeMode.AutoSize,
-                Location = new Point(
-                    //Math.Max(0, (panelVisualizacao.Width - bmp.Width) / 2),
-                    //20
-                    xCentralizado,
-                    yCentralizado
-                )
+                Location = new Point(xPos, yPos)
             };
 
             panelVisualizacao.Controls.Add(pic);
+
+            // Atualiza label de informações (ex: Página 1 de 5 - Zoom 120%)
+            lblInfo.Text = $"Página {paginaAtual + 1} de {produtosPorPagina.Count} ({Math.Round(zoomEscala * 100)}%)";
             AtualizarBotoes();
         }
+
+
 
         // Renomeado para DesenharPaginaEtiquetas para diferenciar da impressão
         private void DesenharPaginaEtiquetas(Graphics g, float escala)
@@ -538,100 +603,186 @@ namespace EtiquetaFORNew
         }
 
         // ... (Seu código original DesenharCodigoBarras)
+        //private void DesenharCodigoBarras(Graphics g, string codigo, RectangleF bounds, float escala)
+        //{
+        //    // Limpa o código (remove caracteres não numéricos)
+        //    string codigoLimpo = new string(Array.FindAll(codigo.ToCharArray(), c => char.IsDigit(c)));
+
+        //    if (string.IsNullOrEmpty(codigoLimpo))
+        //    {
+        //        g.DrawString("[SEM CÓDIGO]", new Font("Arial", bounds.Height * 0.15f), Brushes.Gray, bounds);
+        //        return;
+        //    }
+
+        //    try
+        //    {
+        //        Barcode b = new Barcode();
+
+        //        int larguraPixels, alturaPixels;
+
+        //        if (escala == 1.0f)
+        //        {
+        //            // IMPRESSÃO: bounds está em MM, usa DPI da impressora
+        //            float dpiX = g.DpiX;
+        //            float dpiY = g.DpiY;
+
+        //            larguraPixels = (int)Math.Round((bounds.Width / 25.4f) * dpiX);
+        //            alturaPixels = (int)Math.Round((bounds.Height / 25.4f) * dpiY);
+        //        }
+        //        else
+        //        {
+        //            // VISUALIZAÇÃO: bounds JÁ está em pixels, usa direto
+        //            float qualityFactor = 2.0f;
+
+        //            larguraPixels = (int)Math.Round(bounds.Width * qualityFactor);
+        //            alturaPixels = (int)Math.Round(bounds.Height * qualityFactor);
+        //        }
+
+        //        if (larguraPixels <= 1 || alturaPixels <= 1)
+        //        {
+        //            throw new Exception("Dimensões de código de barras inválidas.");
+        //        }
+
+        //        // Configurações do código de barras
+        //        b.Width = larguraPixels;
+        //        b.Height = alturaPixels;
+
+        //        //Aparecer o digito do código de barras na impressão
+        //        b.IncludeLabel = false;
+        //        //
+        //        b.Alignment = AlignmentPositions.Center;
+        //        b.ForeColor = SKColors.Black;
+        //        b.BackColor = SKColors.White;
+
+        //        // Gera o código de barras
+        //        using (SKImage skImage = b.Encode(BarcodeStandard.Type.Code128, codigoLimpo))
+        //        {
+        //            if (skImage == null)
+        //            {
+        //                throw new Exception("Falha ao gerar o SKImage do código de barras.");
+        //            }
+
+        //            // Converte para System.Drawing.Image
+        //            using (SKData skData = skImage.Encode(SKEncodedImageFormat.Png, 100))
+        //            {
+        //                if (skData == null)
+        //                {
+        //                    throw new Exception("Falha ao codificar SKImage para SKData.");
+        //                }
+
+        //                using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+        //                {
+        //                    skData.SaveTo(ms);
+        //                    ms.Seek(0, System.IO.SeekOrigin.Begin);
+
+        //                    using (System.Drawing.Image barcodeImage = System.Drawing.Image.FromStream(ms))
+        //                    {
+        //                        // Desenha a imagem no retângulo especificado
+        //                        g.DrawImage(barcodeImage, bounds);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Tratamento de erro
+        //        using (Font fontErro = new Font("Arial", bounds.Height * 0.10f))
+        //        {
+        //            StringFormat sf = new StringFormat
+        //            {
+        //                Alignment = StringAlignment.Center,
+        //                LineAlignment = StringAlignment.Center
+        //            };
+        //            g.DrawString($"ERRO BARCODE: {codigoLimpo} - {ex.Message}",
+        //                         fontErro, Brushes.Red, bounds, sf);
+        //        }
+        //    }
+        //}
+
         private void DesenharCodigoBarras(Graphics g, string codigo, RectangleF bounds, float escala)
         {
-            // Limpa o código (remove caracteres não numéricos)
-            string codigoLimpo = new string(Array.FindAll(codigo.ToCharArray(), c => char.IsDigit(c)));
+            // Limpa o código (mantém apenas o que for essencial para o padrão Code128/EAN)
+            string codigoLimpo = new string(Array.FindAll(codigo.ToCharArray(), c => !char.IsControl(c)));
 
             if (string.IsNullOrEmpty(codigoLimpo))
             {
-                g.DrawString("[SEM CÓDIGO]", new Font("Arial", bounds.Height * 0.15f), Brushes.Gray, bounds);
+                g.DrawString("[SEM CÓDIGO]", new Font("Arial", 7), Brushes.Gray, bounds);
                 return;
             }
 
             try
             {
                 Barcode b = new Barcode();
-
                 int larguraPixels, alturaPixels;
 
                 if (escala == 1.0f)
                 {
-                    // IMPRESSÃO: bounds está em MM, usa DPI da impressora
-                    float dpiX = g.DpiX;
-                    float dpiY = g.DpiY;
-
-                    larguraPixels = (int)Math.Round((bounds.Width / 25.4f) * dpiX);
-                    alturaPixels = (int)Math.Round((bounds.Height / 25.4f) * dpiY);
+                    // MODO IMPRESSÃO: Usa o DPI real da impressora para precisão milimétrica
+                    larguraPixels = (int)Math.Round((bounds.Width / 25.4f) * g.DpiX);
+                    alturaPixels = (int)Math.Round((bounds.Height / 25.4f) * g.DpiY);
                 }
                 else
                 {
-                    // VISUALIZAÇÃO: bounds JÁ está em pixels, usa direto
-                    float qualityFactor = 2.0f;
-
-                    larguraPixels = (int)Math.Round(bounds.Width * qualityFactor);
-                    alturaPixels = (int)Math.Round(bounds.Height * qualityFactor);
+                    // MODO VISUALIZAÇÃO: Usa os pixels da tela + fator de qualidade para bipagem
+                    // Multiplicamos por 1.5f para garantir densidade de pixels ao bipar o monitor
+                    float qualityMultiplier = 1.5f;
+                    larguraPixels = (int)Math.Round(bounds.Width * qualityMultiplier);
+                    alturaPixels = (int)Math.Round(bounds.Height * qualityMultiplier);
                 }
 
-                if (larguraPixels <= 1 || alturaPixels <= 1)
-                {
-                    throw new Exception("Dimensões de código de barras inválidas.");
-                }
+                // Evita erro de GDI+ com dimensões zeradas
+                larguraPixels = Math.Max(10, larguraPixels);
+                alturaPixels = Math.Max(10, alturaPixels);
 
-                // Configurações do código de barras
                 b.Width = larguraPixels;
                 b.Height = alturaPixels;
-
-                //Aparecer o digito do código de barras na impressão
-                b.IncludeLabel = false;
-                //
+                b.IncludeLabel = false; // Geralmente o texto vai em um elemento separado no seu template
                 b.Alignment = AlignmentPositions.Center;
                 b.ForeColor = SKColors.Black;
                 b.BackColor = SKColors.White;
 
-                // Gera o código de barras
+                // Gera o código de barras usando SkiaSharp
                 using (SKImage skImage = b.Encode(BarcodeStandard.Type.Code128, codigoLimpo))
                 {
-                    if (skImage == null)
-                    {
-                        throw new Exception("Falha ao gerar o SKImage do código de barras.");
-                    }
+                    if (skImage == null) throw new Exception("Falha ao gerar SKImage.");
 
-                    // Converte para System.Drawing.Image
                     using (SKData skData = skImage.Encode(SKEncodedImageFormat.Png, 100))
+                    using (MemoryStream ms = new MemoryStream(skData.ToArray()))
                     {
-                        if (skData == null)
+                        using (System.Drawing.Image barcodeImage = System.Drawing.Image.FromStream(ms))
                         {
-                            throw new Exception("Falha ao codificar SKImage para SKData.");
-                        }
+                            // Se for visualização, desativamos o AntiAlias momentaneamente para as barras ficarem nítidas
+                            var prevSmoothing = g.SmoothingMode;
+                            if (escala > 1.0f) g.SmoothingMode = SmoothingMode.None;
 
-                        using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
-                        {
-                            skData.SaveTo(ms);
-                            ms.Seek(0, System.IO.SeekOrigin.Begin);
+                            g.DrawImage(barcodeImage, bounds);
 
-                            using (System.Drawing.Image barcodeImage = System.Drawing.Image.FromStream(ms))
-                            {
-                                // Desenha a imagem no retângulo especificado
-                                g.DrawImage(barcodeImage, bounds);
-                            }
+                            g.SmoothingMode = prevSmoothing;
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                // Tratamento de erro
-                using (Font fontErro = new Font("Arial", bounds.Height * 0.10f))
+                using (Font fontErro = new Font("Arial", 6))
                 {
-                    StringFormat sf = new StringFormat
-                    {
-                        Alignment = StringAlignment.Center,
-                        LineAlignment = StringAlignment.Center
-                    };
-                    g.DrawString($"ERRO BARCODE: {codigoLimpo} - {ex.Message}",
-                                 fontErro, Brushes.Red, bounds, sf);
+                    g.DrawString("ERR BARCODE", fontErro, Brushes.Red, bounds);
                 }
+            }
+        }
+
+
+        private void FormImpressao_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (Control.ModifierKeys == Keys.Control)
+            {
+                if (e.Delta > 0) zoomEscala *= FATOR_ZOOM;
+                else zoomEscala /= FATOR_ZOOM;
+
+                zoomEscala = Math.Max(0.1f, Math.Min(zoomEscala, 10.0f));
+                DesenharVisualizacao();
+                ((HandledMouseEventArgs)e).Handled = true; // Impede que o scroll mova a barra enquanto faz zoom
             }
         }
     }
