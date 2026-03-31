@@ -635,9 +635,11 @@ namespace EtiquetaFORNew
                     break;
 
                 case "NOTAS ENTRADA":
+                    //bloqueio do filtros manuais ao selecionar opção de notas de Entrada
                     cmbGrupo.Enabled = false;
                     cmbFabricante.Enabled = false;
                     cmbFornecedor.Enabled = false;
+
                     lblDocumento.Text = "Número da NF:";
                     lblDocumento.Visible = true;
                     txtDocumento.Visible = true;
@@ -651,6 +653,10 @@ namespace EtiquetaFORNew
                     break;
 
                 case "PROMOÇÕES":
+                    //bloqueio do filtros manuais ao selecionar opção de promoções
+                    cmbGrupo.Enabled = false;
+                    cmbFabricante.Enabled = false;
+                    cmbFornecedor.Enabled = false;
                     // à­ Mostrar combo de promoções e carregar promoções ativas
                     lblPromocao.Visible = true;
                     cmbPromocao.Visible = true;
