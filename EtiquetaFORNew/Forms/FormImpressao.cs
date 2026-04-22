@@ -497,7 +497,7 @@ namespace EtiquetaFORNew
                     case TipoElemento.CodigoBarras:
                         // ⭐ ATUALIZADO: Agora suporta diferentes campos de código
                         string codigoBarras = ObterCodigoBarras(elem.Conteudo, produto);
-                        DesenharCodigoBarras(g, codigoBarras, bounds, escala, elem.UsarBarrasDeGuarda);
+                        DesenharCodigoBarras(g, codigoBarras, bounds, escala);
                         break;
 
                     case TipoElemento.Imagem:
@@ -602,207 +602,176 @@ namespace EtiquetaFORNew
             }
         }
 
-
+        // ... (Seu código original DesenharCodigoBarras)
         //private void DesenharCodigoBarras(Graphics g, string codigo, RectangleF bounds, float escala)
         //{
-        //    // Limpa o código (mantém apenas o que for essencial para o padrão Code128/EAN)
-        //    string codigoLimpo = new string(Array.FindAll(codigo.ToCharArray(), c => !char.IsControl(c)));
+        //    // Limpa o código (remove caracteres não numéricos)
+        //    string codigoLimpo = new string(Array.FindAll(codigo.ToCharArray(), c => char.IsDigit(c)));
 
         //    if (string.IsNullOrEmpty(codigoLimpo))
         //    {
-        //        g.DrawString("[SEM CÓDIGO]", new Font("Arial", 7), Brushes.Gray, bounds);
+        //        g.DrawString("[SEM CÓDIGO]", new Font("Arial", bounds.Height * 0.15f), Brushes.Gray, bounds);
         //        return;
         //    }
 
         //    try
         //    {
         //        Barcode b = new Barcode();
+
         //        int larguraPixels, alturaPixels;
 
         //        if (escala == 1.0f)
         //        {
-        //            // MODO IMPRESSÃO: Usa o DPI real da impressora para precisão milimétrica
-        //            larguraPixels = (int)Math.Round((bounds.Width / 25.4f) * g.DpiX);
-        //            alturaPixels = (int)Math.Round((bounds.Height / 25.4f) * g.DpiY);
+        //            // IMPRESSÃO: bounds está em MM, usa DPI da impressora
+        //            float dpiX = g.DpiX;
+        //            float dpiY = g.DpiY;
+
+        //            larguraPixels = (int)Math.Round((bounds.Width / 25.4f) * dpiX);
+        //            alturaPixels = (int)Math.Round((bounds.Height / 25.4f) * dpiY);
         //        }
         //        else
         //        {
-        //            // MODO VISUALIZAÇÃO: Usa os pixels da tela + fator de qualidade para bipagem
-        //            // Multiplicamos por 1.5f para garantir densidade de pixels ao bipar o monitor
-        //            float qualityMultiplier = 1.5f;
-        //            larguraPixels = (int)Math.Round(bounds.Width * qualityMultiplier);
-        //            alturaPixels = (int)Math.Round(bounds.Height * qualityMultiplier);
+        //            // VISUALIZAÇÃO: bounds JÁ está em pixels, usa direto
+        //            float qualityFactor = 2.0f;
+
+        //            larguraPixels = (int)Math.Round(bounds.Width * qualityFactor);
+        //            alturaPixels = (int)Math.Round(bounds.Height * qualityFactor);
         //        }
 
-        //        // Evita erro de GDI+ com dimensões zeradas
-        //        larguraPixels = Math.Max(10, larguraPixels);
-        //        alturaPixels = Math.Max(10, alturaPixels);
+        //        if (larguraPixels <= 1 || alturaPixels <= 1)
+        //        {
+        //            throw new Exception("Dimensões de código de barras inválidas.");
+        //        }
 
+        //        // Configurações do código de barras
         //        b.Width = larguraPixels;
         //        b.Height = alturaPixels;
-        //        b.IncludeLabel = false; // Geralmente o texto vai em um elemento separado no seu template
+
+        //        //Aparecer o digito do código de barras na impressão
+        //        b.IncludeLabel = false;
+        //        //
         //        b.Alignment = AlignmentPositions.Center;
         //        b.ForeColor = SKColors.Black;
         //        b.BackColor = SKColors.White;
 
-        //        // Gera o código de barras usando SkiaSharp
+        //        // Gera o código de barras
         //        using (SKImage skImage = b.Encode(BarcodeStandard.Type.Code128, codigoLimpo))
         //        {
-        //            if (skImage == null) throw new Exception("Falha ao gerar SKImage.");
-
-        //            using (SKData skData = skImage.Encode(SKEncodedImageFormat.Png, 100))
-        //            using (MemoryStream ms = new MemoryStream(skData.ToArray()))
+        //            if (skImage == null)
         //            {
-        //                using (System.Drawing.Image barcodeImage = System.Drawing.Image.FromStream(ms))
+        //                throw new Exception("Falha ao gerar o SKImage do código de barras.");
+        //            }
+
+        //            // Converte para System.Drawing.Image
+        //            using (SKData skData = skImage.Encode(SKEncodedImageFormat.Png, 100))
+        //            {
+        //                if (skData == null)
         //                {
-        //                    // Se for visualização, desativamos o AntiAlias momentaneamente para as barras ficarem nítidas
-        //                    var prevSmoothing = g.SmoothingMode;
-        //                    if (escala > 1.0f) g.SmoothingMode = SmoothingMode.None;
+        //                    throw new Exception("Falha ao codificar SKImage para SKData.");
+        //                }
 
-        //                    g.DrawImage(barcodeImage, bounds);
+        //                using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+        //                {
+        //                    skData.SaveTo(ms);
+        //                    ms.Seek(0, System.IO.SeekOrigin.Begin);
 
-        //                    g.SmoothingMode = prevSmoothing;
+        //                    using (System.Drawing.Image barcodeImage = System.Drawing.Image.FromStream(ms))
+        //                    {
+        //                        // Desenha a imagem no retângulo especificado
+        //                        g.DrawImage(barcodeImage, bounds);
+        //                    }
         //                }
         //            }
         //        }
         //    }
         //    catch (Exception ex)
         //    {
-        //        using (Font fontErro = new Font("Arial", 6))
+        //        // Tratamento de erro
+        //        using (Font fontErro = new Font("Arial", bounds.Height * 0.10f))
         //        {
-        //            g.DrawString("ERR BARCODE", fontErro, Brushes.Red, bounds);
-        //        }
-        //    }
-        //}
-
-        //private void DesenharCodigoBarras(Graphics g, string codigo, RectangleF bounds, float escala, bool usarGuarda)
-        //{
-        //    string codigoLimpo = new string(Array.FindAll(codigo.ToCharArray(), c => !char.IsControl(c)));
-        //    if (string.IsNullOrEmpty(codigoLimpo)) return;
-
-        //    try
-        //    {
-        //        Barcode b = new Barcode();
-        //        int larguraPixels, alturaPixels;
-
-        //        // Mantém sua lógica de escala CRÍTICA para impressão não sair errada
-        //        if (escala == 1.0f)
-        //        {
-        //            larguraPixels = (int)Math.Round((bounds.Width / 25.4f) * g.DpiX);
-        //            alturaPixels = (int)Math.Round((bounds.Height / 25.4f) * g.DpiY);
-        //        }
-        //        else
-        //        {
-        //            float qualityMultiplier = 1.5f;
-        //            larguraPixels = (int)Math.Round(bounds.Width * qualityMultiplier);
-        //            alturaPixels = (int)Math.Round(bounds.Height * qualityMultiplier);
-        //        }
-
-        //        b.Width = Math.Max(10, larguraPixels);
-        //        b.Height = Math.Max(10, alturaPixels);
-        //        b.Alignment = AlignmentPositions.Center;
-        //        b.IncludeLabel = usarGuarda; // Só inclui o texto embaixo se for usar guarda (EAN-13)
-
-        //        // ✅ ACRESCIMO: Seleciona o tipo baseado na opção do usuário
-        //        var tipoBarcode = usarGuarda ? BarcodeStandard.Type.Ean13 : BarcodeStandard.Type.Code128;
-
-        //        using (SKImage skImage = b.Encode(tipoBarcode, codigoLimpo))
-        //        {
-        //            if (skImage == null) return;
-
-        //            using (SKData skData = skImage.Encode(SKEncodedImageFormat.Png, 100))
-        //            using (MemoryStream ms = new MemoryStream(skData.ToArray()))
-        //            using (System.Drawing.Image barcodeImage = System.Drawing.Image.FromStream(ms))
+        //            StringFormat sf = new StringFormat
         //            {
-        //                var prevSmoothing = g.SmoothingMode;
-        //                if (escala > 1.0f) g.SmoothingMode = SmoothingMode.None;
-
-        //                g.DrawImage(barcodeImage, bounds);
-
-        //                g.SmoothingMode = prevSmoothing;
-        //            }
+        //                Alignment = StringAlignment.Center,
+        //                LineAlignment = StringAlignment.Center
+        //            };
+        //            g.DrawString($"ERRO BARCODE: {codigoLimpo} - {ex.Message}",
+        //                         fontErro, Brushes.Red, bounds, sf);
         //        }
-        //    }
-        //    catch (Exception)
-        //    {
-        //        g.DrawString("ERR", new Font("Arial", 5), Brushes.Red, bounds);
         //    }
         //}
 
-        private void DesenharCodigoBarras(Graphics g, string codigo, RectangleF bounds, float escala, bool usarGuarda)
+        private void DesenharCodigoBarras(Graphics g, string codigo, RectangleF bounds, float escala)
         {
-            string codigoLimpo = new string(Array.FindAll(codigo.ToCharArray(), char.IsDigit));
-            if (string.IsNullOrEmpty(codigoLimpo)) return;
+            // Limpa o código (mantém apenas o que for essencial para o padrão Code128/EAN)
+            string codigoLimpo = new string(Array.FindAll(codigo.ToCharArray(), c => !char.IsControl(c)));
 
-            if (usarGuarda && codigoLimpo.Length < 13)
-                codigoLimpo = codigoLimpo.PadLeft(13, '0');
+            if (string.IsNullOrEmpty(codigoLimpo))
+            {
+                g.DrawString("[SEM CÓDIGO]", new Font("Arial", 7), Brushes.Gray, bounds);
+                return;
+            }
 
             try
             {
                 Barcode b = new Barcode();
+                int larguraPixels, alturaPixels;
 
-                // 1. Cálculo de Dimensões Reais
-                int larguraPixels = (int)Math.Round((bounds.Width / 25.4f) * g.DpiX);
-                int alturaPixels = (int)Math.Round((bounds.Height / 25.4f) * g.DpiY);
-
-                // Para evitar que os números fiquem colados, definimos uma largura interna 
-                // ligeiramente menor, permitindo que a biblioteca organize os vãos.
-                b.Width = larguraPixels;
-                b.Height = alturaPixels;
-
-                if (usarGuarda)
+                if (escala == 1.0f)
                 {
-                    b.IncludeLabel = true;
-
-                    // Fonte que você aprovou (Tamanho OK)
-                    var tf = SKTypeface.FromFamilyName("Arial Narrow", SKFontStyle.Normal);
-                    float tamanhoFontePixels = (float)(alturaPixels * 0.18);
-                    b.LabelFont = new SKFont(tf, tamanhoFontePixels);
-
-                    // ⭐ A CHAVE PARA SEPARAR: Algumas versões da biblioteca usam b.StandardizeLabel
-                    // Se não houver essa propriedade, ela usará o kerning padrão do EAN-13.
-                    b.Alignment = AlignmentPositions.Center;
+                    // MODO IMPRESSÃO: Usa o DPI real da impressora para precisão milimétrica
+                    larguraPixels = (int)Math.Round((bounds.Width / 25.4f) * g.DpiX);
+                    alturaPixels = (int)Math.Round((bounds.Height / 25.4f) * g.DpiY);
                 }
                 else
                 {
-                    b.IncludeLabel = false;
+                    // MODO VISUALIZAÇÃO: Usa os pixels da tela + fator de qualidade para bipagem
+                    // Multiplicamos por 1.5f para garantir densidade de pixels ao bipar o monitor
+                    float qualityMultiplier = 1.5f;
+                    larguraPixels = (int)Math.Round(bounds.Width * qualityMultiplier);
+                    alturaPixels = (int)Math.Round(bounds.Height * qualityMultiplier);
                 }
 
-                var tipoBarcode = usarGuarda ? BarcodeStandard.Type.Ean13 : BarcodeStandard.Type.Code128;
-                //var tipoBarcode = BarcodeStandard.Type.Code128;
+                // Evita erro de GDI+ com dimensões zeradas
+                larguraPixels = Math.Max(10, larguraPixels);
+                alturaPixels = Math.Max(10, alturaPixels);
 
+                b.Width = larguraPixels;
+                b.Height = alturaPixels;
+                b.IncludeLabel = false; // Geralmente o texto vai em um elemento separado no seu template
+                b.Alignment = AlignmentPositions.Center;
+                b.ForeColor = SKColors.Black;
+                b.BackColor = SKColors.White;
 
-                using (SKImage skImage = b.Encode(tipoBarcode, codigoLimpo))
+                // Gera o código de barras usando SkiaSharp
+                using (SKImage skImage = b.Encode(BarcodeStandard.Type.Code128, codigoLimpo))
                 {
-                    if (skImage == null) return;
+                    if (skImage == null) throw new Exception("Falha ao gerar SKImage.");
 
                     using (SKData skData = skImage.Encode(SKEncodedImageFormat.Png, 100))
                     using (MemoryStream ms = new MemoryStream(skData.ToArray()))
-                    using (System.Drawing.Image barcodeImage = System.Drawing.Image.FromStream(ms))
                     {
-                        // Voltando para a renderização de alta qualidade para evitar serrilhado
-                        var prevSmoothing = g.SmoothingMode;
-                        var prevInterpolation = g.InterpolationMode;
+                        using (System.Drawing.Image barcodeImage = System.Drawing.Image.FromStream(ms))
+                        {
+                            // Se for visualização, desativamos o AntiAlias momentaneamente para as barras ficarem nítidas
+                            var prevSmoothing = g.SmoothingMode;
+                            if (escala > 1.0f) g.SmoothingMode = SmoothingMode.None;
 
-                        g.SmoothingMode = SmoothingMode.HighQuality;
-                        g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                            g.DrawImage(barcodeImage, bounds);
 
-                        // Desenha exatamente no centro do retângulo de destino
-                        g.DrawImage(barcodeImage, bounds);
-
-                        g.SmoothingMode = prevSmoothing;
-                        g.InterpolationMode = prevInterpolation;
+                            g.SmoothingMode = prevSmoothing;
+                        }
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 using (Font fontErro = new Font("Arial", 6))
                 {
-                    g.DrawString("ERR_BC", fontErro, Brushes.Red, bounds.X, bounds.Y);
+                    g.DrawString("ERR BARCODE", fontErro, Brushes.Red, bounds);
                 }
             }
         }
+
 
         private void FormImpressao_MouseWheel(object sender, MouseEventArgs e)
         {

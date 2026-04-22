@@ -177,8 +177,7 @@ namespace EtiquetaFORNew
                     CorG = elem.Cor.G,
                     CorB = elem.Cor.B,
                     Alinhamento = elem.Alinhamento.ToString(),
-                    Rotacao = elem.Rotacao,
-                    UsarBarrasDeGuarda = elem.UsarBarrasDeGuarda
+                    Rotacao = elem.Rotacao
                 };
 
                 // ⭐ NOVA: Salvar cor de fundo se definida
@@ -224,8 +223,7 @@ namespace EtiquetaFORNew
                     Bounds = new System.Drawing.Rectangle(elemSer.X, elemSer.Y, elemSer.Largura, elemSer.Altura),
                     Negrito = elemSer.Negrito,
                     Italico = elemSer.Italico,
-                    Cor = System.Drawing.Color.FromArgb(elemSer.CorR, elemSer.CorG, elemSer.CorB),
-                    UsarBarrasDeGuarda = elemSer.UsarBarrasDeGuarda // <--- ADICIONE ESTA LINHA
+                    Cor = System.Drawing.Color.FromArgb(elemSer.CorR, elemSer.CorG, elemSer.CorB)
                 };
 
                 // Alinhamento
@@ -321,7 +319,5 @@ namespace EtiquetaFORNew
         public int? CorFundoG { get; set; }
         public int? CorFundoB { get; set; }
         public float Rotacao { get; set; }
-
-        public bool UsarBarrasDeGuarda { get; set; }
     }
 }

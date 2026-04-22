@@ -67,26 +67,26 @@
             this.btnDesigner = new System.Windows.Forms.Button();
             this.btnImprimir = new System.Windows.Forms.Button();
             this.panelTop = new System.Windows.Forms.Panel();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.chkSelecionarTodos = new System.Windows.Forms.CheckBox();
+            this.btnLimparTodos = new System.Windows.Forms.Button();
+            this.btnCarregar = new System.Windows.Forms.Button();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.btnCalibracao = new System.Windows.Forms.Button();
             this.btnSincronizar = new System.Windows.Forms.Button();
             this.btnConfig = new System.Windows.Forms.Button();
             this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.btnSincronizar2 = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.chkSelecionarTodos = new System.Windows.Forms.CheckBox();
-            this.btnLimparTodos = new System.Windows.Forms.Button();
-            this.btnCarregar = new System.Windows.Forms.Button();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.groupProduto.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numQtd)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvProdutos)).BeginInit();
             this.panelTop.SuspendLayout();
+            this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnSincronizar2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupProduto
@@ -459,6 +459,61 @@
             this.panelTop.Size = new System.Drawing.Size(1004, 47);
             this.panelTop.TabIndex = 0;
             // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.Color.Transparent;
+            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel2.Controls.Add(this.groupProduto);
+            this.panel2.Location = new System.Drawing.Point(12, 57);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(1004, 77);
+            this.panel2.TabIndex = 3;
+            // 
+            // chkSelecionarTodos
+            // 
+            this.chkSelecionarTodos.AutoSize = true;
+            this.chkSelecionarTodos.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.chkSelecionarTodos.Location = new System.Drawing.Point(26, 139);
+            this.chkSelecionarTodos.Name = "chkSelecionarTodos";
+            this.chkSelecionarTodos.Size = new System.Drawing.Size(119, 19);
+            this.chkSelecionarTodos.TabIndex = 5;
+            this.chkSelecionarTodos.Text = "Selecionar Todos";
+            this.chkSelecionarTodos.UseVisualStyleBackColor = true;
+            this.chkSelecionarTodos.CheckedChanged += new System.EventHandler(this.chkSelecionarTodos_CheckedChanged);
+            // 
+            // btnLimparTodos
+            // 
+            this.btnLimparTodos.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
+            this.btnLimparTodos.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnLimparTodos.FlatAppearance.BorderSize = 0;
+            this.btnLimparTodos.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnLimparTodos.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnLimparTodos.ForeColor = System.Drawing.Color.White;
+            this.btnLimparTodos.Location = new System.Drawing.Point(912, 136);
+            this.btnLimparTodos.Name = "btnLimparTodos";
+            this.btnLimparTodos.Size = new System.Drawing.Size(104, 25);
+            this.btnLimparTodos.TabIndex = 6;
+            this.btnLimparTodos.Text = "🗑️ Excluir Todos";
+            this.btnLimparTodos.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnLimparTodos.UseVisualStyleBackColor = false;
+            this.btnLimparTodos.Click += new System.EventHandler(this.btnLimparTodos_Click);
+            // 
+            // btnCarregar
+            // 
+            this.btnCarregar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(143)))), ((int)(((byte)(0)))));
+            this.btnCarregar.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnCarregar.FlatAppearance.BorderSize = 0;
+            this.btnCarregar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCarregar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnCarregar.ForeColor = System.Drawing.Color.Black;
+            this.btnCarregar.Location = new System.Drawing.Point(790, 136);
+            this.btnCarregar.Name = "btnCarregar";
+            this.btnCarregar.Size = new System.Drawing.Size(116, 25);
+            this.btnCarregar.TabIndex = 7;
+            this.btnCarregar.Text = "📥 Carregar";
+            this.btnCarregar.UseVisualStyleBackColor = false;
+            this.btnCarregar.Click += new System.EventHandler(this.btnCarregar_Click);
+            // 
             // btnCalibracao
             // 
             this.btnCalibracao.BackColor = System.Drawing.Color.Transparent;
@@ -540,61 +595,6 @@
             this.pictureBox1.TabIndex = 5;
             this.pictureBox1.TabStop = false;
             // 
-            // panel2
-            // 
-            this.panel2.BackColor = System.Drawing.Color.Transparent;
-            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel2.Controls.Add(this.groupProduto);
-            this.panel2.Location = new System.Drawing.Point(12, 57);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1004, 77);
-            this.panel2.TabIndex = 3;
-            // 
-            // chkSelecionarTodos
-            // 
-            this.chkSelecionarTodos.AutoSize = true;
-            this.chkSelecionarTodos.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.chkSelecionarTodos.Location = new System.Drawing.Point(26, 139);
-            this.chkSelecionarTodos.Name = "chkSelecionarTodos";
-            this.chkSelecionarTodos.Size = new System.Drawing.Size(119, 19);
-            this.chkSelecionarTodos.TabIndex = 5;
-            this.chkSelecionarTodos.Text = "Selecionar Todos";
-            this.chkSelecionarTodos.UseVisualStyleBackColor = true;
-            this.chkSelecionarTodos.CheckedChanged += new System.EventHandler(this.chkSelecionarTodos_CheckedChanged);
-            // 
-            // btnLimparTodos
-            // 
-            this.btnLimparTodos.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
-            this.btnLimparTodos.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnLimparTodos.FlatAppearance.BorderSize = 0;
-            this.btnLimparTodos.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnLimparTodos.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnLimparTodos.ForeColor = System.Drawing.Color.White;
-            this.btnLimparTodos.Location = new System.Drawing.Point(912, 136);
-            this.btnLimparTodos.Name = "btnLimparTodos";
-            this.btnLimparTodos.Size = new System.Drawing.Size(104, 25);
-            this.btnLimparTodos.TabIndex = 6;
-            this.btnLimparTodos.Text = "🗑️ Excluir Todos";
-            this.btnLimparTodos.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnLimparTodos.UseVisualStyleBackColor = false;
-            this.btnLimparTodos.Click += new System.EventHandler(this.btnLimparTodos_Click);
-            // 
-            // btnCarregar
-            // 
-            this.btnCarregar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(143)))), ((int)(((byte)(0)))));
-            this.btnCarregar.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnCarregar.FlatAppearance.BorderSize = 0;
-            this.btnCarregar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCarregar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnCarregar.ForeColor = System.Drawing.Color.Black;
-            this.btnCarregar.Location = new System.Drawing.Point(790, 136);
-            this.btnCarregar.Name = "btnCarregar";
-            this.btnCarregar.Size = new System.Drawing.Size(116, 25);
-            this.btnCarregar.TabIndex = 7;
-            this.btnCarregar.Text = "📥 Carregar";
-            this.btnCarregar.UseVisualStyleBackColor = false;
-            this.btnCarregar.Click += new System.EventHandler(this.btnCarregar_Click);
-            // 
             // FormPrincipal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -621,10 +621,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvProdutos)).EndInit();
             this.panelTop.ResumeLayout(false);
             this.panelTop.PerformLayout();
+            this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnSincronizar2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

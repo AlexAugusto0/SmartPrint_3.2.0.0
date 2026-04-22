@@ -129,11 +129,6 @@ namespace EtiquetaFORNew
             if (cmbTamanho != null) cmbTamanho.SelectedIndexChanged += CmbTamanho_SelectedIndexChanged;
             if (cmbCor != null) cmbCor.SelectedIndexChanged += CmbCor_SelectedIndexChanged;
 
-            //TESTES NA ROTINA DA SELEÇÃO DAS COMBOBOX
-            //cmbBuscaNome.SelectionChangeCommitted += ComboBoxBusca_SelectionChangeCommitted;
-            //cmbBuscaReferencia.SelectionChangeCommitted += ComboBoxBusca_SelectionChangeCommitted;
-            //cmbBuscaCodigo.SelectionChangeCommitted += ComboBoxBusca_SelectionChangeCommitted;
-
         }
 
 
@@ -1856,74 +1851,6 @@ namespace EtiquetaFORNew
                 numQtd.Select(0, numQtd.Text.Length);
             }
         }
-
-        // TESTES NA ROTINA DA BUSCA DAS COMBOBOX
-        //// Use este evento para o Mouse
-        //private void ComboBoxBusca_SelectionChangeCommitted(object sender, EventArgs e)
-        //{
-        //    ComboBox cmb = (ComboBox)sender;
-
-        //    // O BeginInvoke é obrigatório aqui para garantir que o Windows 
-        //    // termine de selecionar o item antes de rodar seu código
-        //    this.BeginInvoke(new Action(() => {
-        //        ExecutarBusca(cmb);
-        //    }));
-        //}
-
-        //private void ComboBoxBusca_KeyDown(object sender, KeyEventArgs e)
-        //{
-        //    if (e.KeyCode == Keys.Escape)
-        //    {
-        //        // Seu código de ESC existente...
-        //        return;
-        //    }
-
-        //    if (e.KeyCode == Keys.Enter)
-        //    {
-        //        e.Handled = true;
-        //        e.SuppressKeyPress = true;
-        //        ExecutarBusca((ComboBox)sender);
-        //    }
-        //}
-
-        //private void ExecutarBusca(ComboBox cmb)
-        //{
-        //    string nomeCampo = GetNomeCampoBusca(cmb);
-        //    if (nomeCampo == null) return;
-
-        //    string termoSelecionado = "";
-
-        //    // 1. TENTA O SELECTEDITEM (Mais confiável)
-        //    if (cmb.SelectedItem != null)
-        //    {
-        //        termoSelecionado = cmb.GetItemText(cmb.SelectedItem);
-        //    }
-        //    else
-        //    {
-        //        // 2. FALLBACK: Busca manual na lista se o SelectedItem estiver nulo
-        //        string termoDigitado = cmb.Text.Trim();
-        //        foreach (object item in cmb.Items)
-        //        {
-        //            if (cmb.GetItemText(item).Equals(termoDigitado, StringComparison.OrdinalIgnoreCase))
-        //            {
-        //                termoSelecionado = cmb.GetItemText(item);
-        //                break;
-        //            }
-        //        }
-        //    }
-
-        //    if (string.IsNullOrWhiteSpace(termoSelecionado)) return;
-
-        //    // Atualiza o texto
-        //    cmb.Text = termoSelecionado;
-
-        //    // Executa a lógica de negócio
-        //    AdicionarProdutoSelecionado(termoSelecionado, nomeCampo, cmb);
-
-        //    // Foco no campo de quantidade
-        //    numQtd.Focus();
-        //    numQtd.Select(0, numQtd.Text.Length);
-        //}
 
         private string GetNomeCampoBusca(ComboBox cmb)
 

@@ -44,10 +44,8 @@ namespace EtiquetaFORNew.Forms
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.FormDesignNovo_Load);
             this.ResumeLayout(false);
-            
 
         }
-        private System.Windows.Forms.CheckBox chkBarrasGuarda;
 
         #endregion
     }
