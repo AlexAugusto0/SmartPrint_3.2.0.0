@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 
 namespace EtiquetaFORNew
@@ -65,6 +66,10 @@ namespace EtiquetaFORNew
 
         // ⭐ NOVA PROPRIEDADE: Cor de fundo do elemento (espaço ao redor do texto)
         public Color? CorFundo { get; set; }
+
+        // NNova Propriedade Para CodBarras: Barras de Guarda
+        
+        public bool UsarBarrasDeGuarda { get; set; }
 
         public ElementoEtiqueta()
         {

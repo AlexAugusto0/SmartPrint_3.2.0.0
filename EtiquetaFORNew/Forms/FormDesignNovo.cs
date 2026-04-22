@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Printing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -54,6 +55,7 @@ namespace EtiquetaFORNew.Forms
         private Button btnFundoTransparente;
         private Label lblPropriedadesElemento;
         private ComboBox cmbFonte;
+        //private CheckBox chkBarrasGuarda;
 
         // Toolbox de elementos
         private Panel panelToolbox;
@@ -120,6 +122,16 @@ namespace EtiquetaFORNew.Forms
 
             this.template = templateInicial ?? new TemplateEtiqueta();
             this.nomeTemplateAtual = nomeTemplate;
+            //this.chkBarrasGuarda.CheckedChanged += new System.EventHandler(this.chkBarrasGuarda_CheckedChanged);
+            if (this.chkBarrasGuarda != null && this.panelPropriedades != null)
+            {
+                if (!this.panelPropriedades.Controls.Contains(this.chkBarrasGuarda))
+                {
+                    this.panelPropriedades.Controls.Add(this.chkBarrasGuarda);
+                    // Defina a posição manualmente se necessário para não ficar sobreposto
+                    this.chkBarrasGuarda.Location = new Point(10, 450); // Ajuste conforme seu layout
+                }
+            }
 
             if (!string.IsNullOrEmpty(nomeTemplate))
             {
@@ -395,7 +407,7 @@ namespace EtiquetaFORNew.Forms
             panelToolbox = new Panel
             {
                 Dock = DockStyle.Left,
-                Width = 200,
+                Width = 220,
                 BackColor = Color.FromArgb(236, 240, 241),
                 Padding = new Padding(10),
                 AutoScroll = true,
@@ -785,8 +797,8 @@ namespace EtiquetaFORNew.Forms
         {
             panelPropriedades = new Panel
             {
-                Location = new Point(10, 400),
-                Size = new Size(180, 600),
+                Location = new Point(10, 350),
+                Size = new Size(200, 650),
                 AutoScroll = true,
                 BackColor = Color.White,
                 BorderStyle = BorderStyle.FixedSingle,
@@ -1080,6 +1092,27 @@ namespace EtiquetaFORNew.Forms
             panelPropriedades.Controls.Add(btnCorFundo);
             yPos += 35;
 
+            chkBarrasGuarda = new CheckBox
+            {
+                Name = "chkBarrasGuarda",
+                Text = "Barras de Guarda",
+                Location = new Point(10, yPos),
+                Size = new Size(160, 20),
+                Font = new Font("Segoe UI", 8, FontStyle.Bold),
+                ForeColor = Color.FromArgb(41, 128, 185), // Azul discreto para destacar funcionalidade
+                Visible = false
+            };
+            chkBarrasGuarda.CheckedChanged += (s, e) =>
+            {
+                if (elementoSelecionado != null && elementoSelecionado.Tipo == TipoElemento.CodigoBarras)
+                {
+                    elementoSelecionado.UsarBarrasDeGuarda = chkBarrasGuarda.Checked;
+                    pbCanvas.Invalidate();
+                }
+            };
+            panelPropriedades.Controls.Add(chkBarrasGuarda);
+            yPos += 30; // Incrementa para não encavalar se você adicionar mais coisas no futuro
+
             Label lblFundoRapido = new Label
             {
                 Text = "Atalhos:",
@@ -1351,6 +1384,20 @@ namespace EtiquetaFORNew.Forms
                 btnCorFundo.ForeColor = Color.Black;
             }
 
+            if (chkBarrasGuarda != null)
+            {
+                // Só aparece se for Código de Barras
+                bool ehBarcode = (elementoSelecionado.Tipo == TipoElemento.CodigoBarras);
+                chkBarrasGuarda.Visible = ehBarcode;
+
+                if (ehBarcode)
+                {
+                    // Sincroniza o estado sem disparar o evento de loop se necessário
+                    chkBarrasGuarda.Checked = elementoSelecionado.UsarBarrasDeGuarda;
+                }
+            }
+
+
             AtualizarBotoesAlinhamento();
             panelToolbox.ScrollControlIntoView(panelPropriedades);
 
@@ -1366,7 +1413,19 @@ namespace EtiquetaFORNew.Forms
             {
                 if (txtConteudo != null) txtConteudo.Visible = false;
                 if (lblConteudo != null) lblConteudo.Visible = false;
-            }            
+            }
+
+            if (elementoSelecionado.Tipo == TipoElemento.CodigoBarras)
+            {
+                chkBarrasGuarda.Visible = true;
+
+                // CORREÇÃO CRÍTICA: Faz a CheckBox refletir o que está salvo no elemento
+                chkBarrasGuarda.Checked = elementoSelecionado.UsarBarrasDeGuarda;
+
+                //lblAtalhosBarcode.Visible = true;
+                //pnlAtalhosBarcode.Visible = true;
+            }
+
         }
 
         private void AtualizarBotoesAlinhamento()
@@ -1949,7 +2008,8 @@ namespace EtiquetaFORNew.Forms
 
                 case TipoElemento.CodigoBarras:
                     string codigoBarras = ObterValorCampo(elem.Conteudo, produto);
-                    DesenharCodigoBarras(g, codigoBarras, bounds);
+                    //DesenharCodigoBarras(g, codigoBarras, bounds);
+                    DesenharCodigoBarras(g, codigoBarras, bounds, elem.UsarBarrasDeGuarda);
                     break;
 
                 case TipoElemento.Imagem:
@@ -2034,26 +2094,95 @@ namespace EtiquetaFORNew.Forms
             }
         }
 
-        private void DesenharCodigoBarras(Graphics g, string codigo, Rectangle bounds)
+        //private void DesenharCodigoBarras(Graphics g, string codigo, Rectangle bounds)
+        //{
+        //    SalvarEstadoHistorico();
+        //    string codigoLimpo = new string(Array.FindAll(codigo.ToCharArray(), c => char.IsDigit(c)));
+        //    if (string.IsNullOrEmpty(codigoLimpo)) codigoLimpo = "0000000000";
+        //    if (codigoLimpo.Length < 8) codigoLimpo = codigoLimpo.PadLeft(8, '0');
+
+        //    float larguraBarra = (float)bounds.Width / (codigoLimpo.Length * 2);
+        //    float alturaBarras = bounds.Height;
+
+        //    for (int i = 0; i < codigoLimpo.Length; i++)
+        //    {
+        //        int digito = int.Parse(codigoLimpo[i].ToString());
+        //        float larguraAtual = (digito % 2 == 0) ? larguraBarra : larguraBarra * 1.5f;
+        //        float x = bounds.X + (i * larguraBarra * 2);
+
+        //        using (SolidBrush brush = new SolidBrush(Color.Black))
+        //            g.FillRectangle(brush, x, bounds.Y, larguraAtual, alturaBarras);
+        //    }
+
+        //}
+
+        private void DesenharCodigoBarras(Graphics g, string codigo, Rectangle bounds, bool usarGuarda)
         {
-            SalvarEstadoHistorico();
-            string codigoLimpo = new string(Array.FindAll(codigo.ToCharArray(), c => char.IsDigit(c)));
+            string codigoLimpo = new string(Array.FindAll(codigo.ToCharArray(), char.IsDigit));
             if (string.IsNullOrEmpty(codigoLimpo)) codigoLimpo = "0000000000";
-            if (codigoLimpo.Length < 8) codigoLimpo = codigoLimpo.PadLeft(8, '0');
 
-            float larguraBarra = (float)bounds.Width / (codigoLimpo.Length * 2);
-            float alturaBarras = bounds.Height;
+            // --- 1. CONFIGURAÇÃO DA FONTE (Tamanho Técnico) ---
+            // Reduzido para 8% da altura para ser discreto e profissional
+            float tamanhoFonte = bounds.Height * 0.08f;
+            if (tamanhoFonte < 3.0f) tamanhoFonte = 3.0f;
 
+            // Altura das barras centrais (encurtadas para o texto caber)
+            float alturaBarrasNormal = usarGuarda ? bounds.Height * 0.82f : bounds.Height * 0.80f;
+            float larguraBarraUnidade = (float)bounds.Width / (codigoLimpo.Length * 2);
+
+            // [Desenho das barras - Loop FOR igual ao anterior]
             for (int i = 0; i < codigoLimpo.Length; i++)
             {
                 int digito = int.Parse(codigoLimpo[i].ToString());
-                float larguraAtual = (digito % 2 == 0) ? larguraBarra : larguraBarra * 1.5f;
-                float x = bounds.X + (i * larguraBarra * 2);
+                float larguraAtual = (digito % 2 == 0) ? larguraBarraUnidade : larguraBarraUnidade * 1.5f;
+                float x = bounds.X + (i * larguraBarraUnidade * 2);
+
+                float alturaFinal = alturaBarrasNormal;
+                if (usarGuarda)
+                {
+                    // Barras de guarda: Início, Meio e Fim (Altura Total)
+                    bool ehBarraGuarda = (i <= 1 || i == codigoLimpo.Length / 2 || i >= codigoLimpo.Length - 2);
+                    if (ehBarraGuarda) alturaFinal = bounds.Height;
+                }
 
                 using (SolidBrush brush = new SolidBrush(Color.Black))
-                    g.FillRectangle(brush, x, bounds.Y, larguraAtual, alturaBarras);
+                {
+                    g.FillRectangle(brush, x, bounds.Y, larguraAtual, alturaFinal);
+                }
             }
-            
+
+            // --- 2. POSICIONAMENTO DO TEXTO (Padrão EAN-13 Milimetrado) ---
+            if (usarGuarda && codigoLimpo.Length >= 13)
+            {
+                using (Font fonteEan = new Font("Arial Narrow", tamanhoFonte, FontStyle.Regular))
+                {
+                    float yTexto = bounds.Y + (bounds.Height * 0.85f);
+
+                    string prefixo = codigoLimpo.Substring(0, 1);
+                    string grupo1 = codigoLimpo.Substring(1, 6);
+                    string grupo2 = codigoLimpo.Substring(7, 6);
+
+                    // Prefixo: Antes da primeira barra de guarda
+                    g.DrawString(prefixo, fonteEan, Brushes.Black, bounds.X - (tamanhoFonte * 1.5f), yTexto);
+
+                    // Grupo 1: Entre a guarda inicial e a central (Posição 15% da largura)
+                    g.DrawString(grupo1, fonteEan, Brushes.Black, bounds.X + (bounds.Width * 0.12f), yTexto);
+
+                    // Grupo 2: Entre a guarda central e a final (Posição 55% da largura)
+                    g.DrawString(grupo2, fonteEan, Brushes.Black, bounds.X + (bounds.Width * 0.58f), yTexto);
+                }
+            }
+            else
+            {
+                // Caso não seja EAN-13 ou não use guarda, desenha centralizado e minúsculo
+                using (Font fonteEan = new Font("Arial", tamanhoFonte, FontStyle.Regular))
+                {
+                    SizeF sz = g.MeasureString(codigoLimpo, fonteEan);
+                    g.DrawString(codigoLimpo, fonteEan, Brushes.Black,
+                                 bounds.X + (bounds.Width / 2) - (sz.Width / 2),
+                                 bounds.Y + (bounds.Height * 0.85f));
+                }
+            }
         }
 
         private bool PontoEmRetanguloRotacionado(Point ponto, Rectangle bounds, float rotacao)
@@ -2717,6 +2846,18 @@ namespace EtiquetaFORNew.Forms
         private void ChkPadraoDesativar_CheckedChanged(object sender, EventArgs e)
         {
             AtualizarEstadoMargens();
+        }
+
+        private void chkBarrasGuarda_CheckedChanged(object sender, EventArgs e)
+        {
+            if (elementoSelecionado != null && elementoSelecionado.Tipo == TipoElemento.CodigoBarras)
+            {
+                // Salva a preferência no objeto que será serializado/impresso
+                elementoSelecionado.UsarBarrasDeGuarda = chkBarrasGuarda.Checked;
+
+                // Força o redesenho imediato no canvas do designer para visualização
+                pbCanvas.Invalidate();
+            }
         }
 
         private void AtualizarEstadoMargens()
